@@ -1,0 +1,7 @@
+work
+*.pyc
+TODO
+doc.local
+test
+adafruit*
+*secrets.py
