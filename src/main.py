@@ -12,44 +12,81 @@ import board
 import vectorio
 import time
 
+# rtc-support
+import adafruit_ds3231
+
+# AHT20
+import adafruit_ahtx0
+import adafruit_bus_device
+
+# display-support
 import displayio
 from adafruit_display_text import label
 from adafruit_bitmap_font import bitmap_font
-from adafruit_display_shapes.circle import Circle
 
+# fonts and colors
 FONT_S = bitmap_font.load_font("fonts/DejaVuSans-Bold-24-min.bdf")
 FONT_L = bitmap_font.load_font("fonts/DejaVuSans-Bold-52-min.bdf")
 BLACK      = 0x000000
 WHITE      = 0xFFFFFF
 
-C_OFFSET =  2
+# keep a small gap at the border of the display
+GAP =  2
+
+# map wday-numbers to names of day
+WDAY = {
+  0: 'Montag',      1: 'Dienstag',  2: 'Mittwoch',
+  3: 'Donnerstag',  4: 'Freitag',   5: 'Samstag',  6: 'Sonntag'
+  }
+
+# --- value holder (for emulation)   -----------------------------------------
+
+class Values:
+  pass
+
+# --- application class   ----------------------------------------------------
 
 class App:
 
   # --- constructor   --------------------------------------------------------
 
   def __init__(self):
+    """ constructor """
+
     self._display = board.DISPLAY
     self._group = displayio.Group()
     self._background()
 
-    self._radius = int((self._display.height-3*C_OFFSET)/4)
-
+    width  = self._display.width
+    height = self._display.height
     self._map = {
-      'NW': (C_OFFSET+self._radius,
-             C_OFFSET+self._radius),
-      'NE': (self._display.width-C_OFFSET-self._radius,
-             C_OFFSET+self._radius),
-      'SW': (C_OFFSET+self._radius,
-             self._display.height-C_OFFSET-self._radius),
-      'SE': (self._display.width-C_OFFSET-self._radius,
-             self._display.height-C_OFFSET-self._radius)
+      'NW': ((GAP,       GAP),        (0,0)),
+      'NE': ((width-GAP, GAP),        (1,0)),
+      'SW': ((GAP,       height-GAP), (0,1)),
+      'SE': ((width-GAP, height-GAP), (1,1))
     }
+
+    i2c = board.I2C()
+    try:
+      self._rtc = adafruit_ds3231.DS3231(i2c)
+    except:
+      # use emulation
+      self._rtc          = Values()
+      self._rtc.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
+
+    try:
+      self._sensor = adafruit_ahtx0.AHTx0(i2c)
+    except:
+      # use emulation
+      self._sensor                   = Values()
+      self._sensor.temperature       = 22.5
+      self._sensor.relative_humidity = 44
 
   # --- create background   --------------------------------------------------
 
   def _background(self):
-    # white background
+    """ all white background """
+
     palette    = displayio.Palette(1)
     palette[0] = WHITE 
     background = vectorio.Rectangle(pixel_shader=palette,
@@ -57,17 +94,14 @@ class App:
                                     height=self._display.height, x=0, y=0)
     self._group.append(background)
 
-  # --- create circle with text   --------------------------------------------
+  # --- create text at given location   --------------------------------------
 
-  def circle(self,pos,text):
-    """ create circle with given text """
-
-    x,y = self._map[pos]
-    self._group.append(Circle(x,y,self._radius,fill=WHITE,outline=BLACK))
+  def create_text(self,pos,text):
+    """ create text at given location """
 
     t = label.Label(FONT_S,text=text,color=BLACK,
-                    anchor_point=(0.5,0.5))
-    t.anchored_position = (x,y)
+                    anchor_point=self._map[pos][1])
+    t.anchored_position = self._map[pos][0]
     self._group.append(t)
 
   # --- update datetime   ----------------------------------------------------
@@ -75,25 +109,29 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
-    t = label.Label(FONT_L,text="13:22",color=BLACK,
-                    anchor_point=(0.5,0.5))
+    now  = self._rtc.datetime   # this is a struct_time
+    time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
+    day  = WDAY[now.tm_wday]
+    date = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
+                                            now.tm_year%100)
+
+    # create time-label and center it
+    t = label.Label(FONT_L,text=time,
+                    color=BLACK,anchor_point=(0.5,0.5))
     t.anchored_position = (self._display.width/2,self._display.height/2)
     self._group.append(t)
 
-    day =   '22'
-    month = '04'
-    self.circle('NW',day)
-    self.circle('SW',month)
+    # additional labels for day and date on the left side
+    self.create_text('NW',day)
+    self.create_text('NE',date)
 
   # --- update temperature+humidity   ----------------------------------------
 
   def update_env_sensor(self):
     """ read sensor and update values """
 
-    temp = '20.5°C'
-    hum  = '44%'
-    self.circle('NE',temp)
-    self.circle('SE',hum)
+    self.create_text('SW',"{0:.1f}°C".format(self._sensor.temperature))
+    self.create_text('SE',"{0:.0f}%".format(self._sensor.relative_humidity))
 
   # --- main   ---------------------------------------------------------------
 
