@@ -68,11 +68,11 @@ class App:
 
     i2c = board.I2C()
     try:
-      self._rtc = adafruit_ds3231.DS3231(i2c)
+      self.rtc = adafruit_ds3231.DS3231(i2c)
     except:
       # use emulation
-      self._rtc          = Values()
-      self._rtc.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
+      self.rtc          = Values()
+      self.rtc.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
 
     try:
       self._sensor = adafruit_ahtx0.AHTx0(i2c)
@@ -109,7 +109,7 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
-    now  = self._rtc.datetime   # this is a struct_time
+    now  = self.rtc.datetime   # this is a struct_time
     time = "{0:02d}:{1:02d}".format(now.tm_hour+2,now.tm_min)
     day  = WDAY[now.tm_wday-1]
     date = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
@@ -133,9 +133,9 @@ class App:
     self.create_text('SW',"{0:.1f}°C".format(self._sensor.temperature))
     self.create_text('SE',"{0:.0f}%".format(self._sensor.relative_humidity))
 
-  # --- main   ---------------------------------------------------------------
+  # --- update   -------------------------------------------------------------
 
-  def run(self):
+  def update(self):
     self.update_datetime()
     self.update_env_sensor()
     self._display.show(self._group)
@@ -144,6 +144,7 @@ class App:
 # --- main loop   ------------------------------------------------------------
 
 app = App()
-app.run()
 while True:
-  time.sleep(10)
+  app.update()
+  now = app.rtc.datetime   # this is a struct_time
+  time.sleep(60-now.tm_sec)
