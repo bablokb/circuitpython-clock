@@ -57,6 +57,12 @@ class App:
     self._group = displayio.Group()
     self._background()
 
+    self._time = None
+    self._day  = None
+    self._date = None
+    self._temp = None
+    self._hum  = None
+
     width  = self._display.width
     height = self._display.height
     self._map = {
@@ -103,6 +109,7 @@ class App:
                     anchor_point=self._map[pos][1])
     t.anchored_position = self._map[pos][0]
     self._group.append(t)
+    return t
 
   # --- update datetime   ----------------------------------------------------
 
@@ -115,23 +122,42 @@ class App:
     date = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
                                             now.tm_year%100)
 
-    # create time-label and center it
-    t = label.Label(FONT_L,text=time,
-                    color=BLACK,anchor_point=(0.5,0.5))
-    t.anchored_position = (self._display.width/2,self._display.height/2)
-    self._group.append(t)
+    if not self._time:
+      # create time-label and center it
+      self._time = label.Label(FONT_L,text=time,
+                      color=BLACK,anchor_point=(0.5,0.5))
+      self._time.anchored_position = (self._display.width/2,self._display.height/2)
+      self._group.append(self._time)
+    else:
+      self._time.text = time
 
     # additional labels for day and date on the left side
-    self.create_text('NW',day)
-    self.create_text('NE',date)
+    if not self._day:
+      self._day = self.create_text('NW',day)
+    else:
+      self._day.text = day
+
+    if not self._date:
+      self._date = self.create_text('NE',date)
+    else:
+      self._date.text = date
 
   # --- update temperature+humidity   ----------------------------------------
 
   def update_env_sensor(self):
     """ read sensor and update values """
 
-    self.create_text('SW',"{0:.1f}°C".format(self._sensor.temperature))
-    self.create_text('SE',"{0:.0f}%".format(self._sensor.relative_humidity))
+    temp = "{0:.1f}°C".format(self._sensor.temperature)
+    if not self._temp:
+      self._temp = self.create_text('SW',temp)
+    else:
+      self._temp.text = temp
+
+    hum = "{0:.0f}%".format(self._sensor.relative_humidity)
+    if not self._hum:
+      self._hum = self.create_text('SE',hum)
+    else:
+      self._hum.text = hum
 
   # --- update   -------------------------------------------------------------
 
