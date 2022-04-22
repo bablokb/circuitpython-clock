@@ -110,8 +110,8 @@ class App:
     """ read RTC and update values """
 
     now  = self._rtc.datetime   # this is a struct_time
-    time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
-    day  = WDAY[now.tm_wday]
+    time = "{0:02d}:{1:02d}".format(now.tm_hour+2,now.tm_min)
+    day  = WDAY[now.tm_wday-1]
     date = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
                                             now.tm_year%100)
 
