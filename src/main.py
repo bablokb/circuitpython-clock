@@ -11,6 +11,7 @@
 import board
 import vectorio
 import time
+import rtc
 
 # rtc-support
 import adafruit_ds3231
@@ -73,12 +74,14 @@ class App:
     }
 
     i2c = board.I2C()
+    self.rtc_int = rtc.RTC()
+
     try:
-      self.rtc = adafruit_ds3231.DS3231(i2c)
+      rtc_ext = adafruit_ds3231.DS3231(i2c)
+      self.rtc_int.datetime = rtc_ext.datetime
     except:
       # use emulation
-      self.rtc          = Values()
-      self.rtc.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
+      self.rtc_int.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
 
     try:
       self._sensor = adafruit_ahtx0.AHTx0(i2c)
@@ -116,9 +119,9 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
-    now  = self.rtc.datetime   # this is a struct_time
-    time = "{0:02d}:{1:02d}".format(now.tm_hour+2,now.tm_min)
-    day  = WDAY[now.tm_wday-1]
+    now  = self.rtc_int.datetime   # this is a struct_time
+    time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
+    day  = WDAY[now.tm_wday]
     date = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
                                             now.tm_year%100)
 
@@ -172,5 +175,7 @@ class App:
 app = App()
 while True:
   app.update()
-  now = app.rtc.datetime   # this is a struct_time
-  time.sleep(60-now.tm_sec)
+  now = app.rtc_int.datetime   # this is a struct_time
+  w_time = 60 - now.tm_sec
+  print("w_time: %d" % w_time)
+  time.sleep(w_time)
