@@ -11,7 +11,11 @@
 import board
 import vectorio
 import time
+import alarm
 import rtc
+
+# buttons
+import keypad
 
 # rtc-support
 import adafruit_ds3231
@@ -53,6 +57,14 @@ class App:
 
   def __init__(self):
     """ constructor """
+
+    self._pins = [board.SW_A,board.SW_B,
+                  board.SW_C,board.SW_UP,board.SW_DOWN]
+    self._keypad = keypad.Keys(self._pins,
+                               value_when_pressed=False,
+                               pull=True,
+                               interval=0.020,
+                               max_events=4)
 
     self._display = board.DISPLAY
     self._group = displayio.Group()
@@ -173,9 +185,11 @@ class App:
 # --- main loop   ------------------------------------------------------------
 
 app = App()
+pin_alarm = alarm.pin.PinAlarm(board.USER_SW,value=False,edge=True,pull=True)
 while True:
   app.update()
   now = app.rtc_int.datetime   # this is a struct_time
   w_time = 60 - now.tm_sec
   print("w_time: %d" % w_time)
-  time.sleep(w_time)
+  wake_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic()+w_time)
+  alarm.light_sleep_until_alarms(wake_alarm,pin_alarm)
