@@ -17,6 +17,9 @@ import rtc
 # DS3231 support
 import adafruit_ds3231
 
+# PCF8523 support
+import adafruit_pcf8523
+
 # AHT20
 import adafruit_ahtx0
 import adafruit_bus_device
@@ -76,18 +79,27 @@ class App:
       'SE': ((width-GAP, height-GAP), (1,1))
     }
 
+    # use DS3231 or PCF8523. Both use the same address, and all fields
+    # relevant for us are in both classes. And neither class does a
+    # check of the chip-id.
     i2c = board.I2C()
     try:
-      rtc_ext = adafruit_ds3231.DS3231(i2c)
-      print("using DS3231")
-    except:
       try:
-        rtc_ext = ...
-        print("using ")
+        rtc_ext = adafruit_ds3231.DS3231(i2c)
+        if rtc_ext.alarm2.__repr__():          # PCF8523 only has a single
+          pass                                 # alarm, so this will fail
+        print("using DS3231")
       except:
-        rtc_ext = Values()
-        rtc_ext.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
-        print("emulating external RTC")
+        try:
+          rtc_ext = adafruit_pcf8523.PCF8523(i2c)
+          print("using PCF8523")
+        except:
+          raise
+    except:
+      rtc_ext = Values()
+      rtc_ext.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
+      rtc_ext.lost_power = True
+      print("emulating external RTC")
 
     self._clock = Clock(rtc_ext,rtc.RTC())
     self._clock.update()
@@ -128,6 +140,7 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
+    self._clock.update()
     now      = time.localtime()
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
