@@ -86,10 +86,10 @@ class App:
     try:
       try:
         rtc_ext = adafruit_ds3231.DS3231(i2c)
-        if rtc_ext.alarm2.__repr__():          # PCF8523 only has a single
-          pass                                 # alarm, so this will fail
+        if not rtc_ext.alarm2[1]:
+          raise
         print("using DS3231")
-      except:
+      except Exception as ex:
         try:
           rtc_ext = adafruit_pcf8523.PCF8523(i2c)
           print("using PCF8523")
@@ -102,7 +102,6 @@ class App:
       print("emulating external RTC")
 
     self._clock = Clock(rtc_ext,rtc.RTC())
-    self._clock.update()
 
     try:
       self._sensor = adafruit_ahtx0.AHTx0(i2c)
@@ -140,8 +139,7 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
-    self._clock.update()
-    now      = time.localtime()
+    now      = self._clock.localtime()
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
     date     = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
