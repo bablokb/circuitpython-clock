@@ -200,6 +200,6 @@ while True:
   w_time = 60 - now.tm_sec
   print("waiting for %d seconds" % w_time)
   wake_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic()+w_time)
+  alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
   #alarm.light_sleep_until_alarms(wake_alarm)
-  #alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
-  time.sleep(w_time)
+  #time.sleep(w_time)
