@@ -38,13 +38,7 @@ class Clock:
 
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
-
-    try:
-      self._init_esp01();
-      print("ESP-01 available")
-    except:
-      self._wifi = None
-      raise
+    self._wifi    = None
 
   # --- initialze ESP-01, connect to AP and to remote-port   -----------------
 
@@ -76,8 +70,8 @@ class Clock:
 
   # --- query local time from time-server   ---------------------------------
 
-  def _get_localtime(self):
-    """ query localtime from time-server """
+  def _get_remotetime(self):
+    """ query time from time-server """
 
     response = self._wifi.get(TIME_API).json()
 
@@ -94,10 +88,10 @@ class Clock:
     return time.struct_time(
       (year, month, mday, hours, minutes, seconds, week_day, year_day, is_dst))
 
-  # --- update local time   -------------------------------------------------
+  # --- return local time   -------------------------------------------------
 
-  def update(self,force_net=False):
-    """ update internal RTC """
+  def localtime(self,force_net=False):
+    """ return localtime, updating RTCs if necessary """
 
     # force update on:
     #   - explicit request
@@ -109,31 +103,31 @@ class Clock:
           (self._rtc_int.datetime.tm_hour,self._rtc_int.datetime.tm_min))
     print("rtc_ext: %02d:%02d" %
           (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min))
-    do_update = (self._wifi and (
-      force_net or
-      (self._rtc_ext and self._rtc_ext.lost_power) or
-      (self._rtc_ext and (self._rtc_ext.datetime.tm_hour == 0 and
-                          self._rtc_ext.datetime.tm_min == 0)) or
-      (self._rtc_int.datetime.tm_hour == 3 and self._rtc_int.datetime.tm_min == 0))
+
+    do_update = (
+      force_net or self._rtc_ext.lost_power or
+      (self._rtc_ext.datetime.tm_hour == 0 and
+                          self._rtc_ext.datetime.tm_min == 0) or
+      (self._rtc_int.datetime.tm_hour == 3 and self._rtc_int.datetime.tm_min == 0)
     )
 
-    try:
-      if do_update:
+    if do_update:
+      try:
+        if not self._wifi:
+          self._init_esp01();
         # update internal+external RTC from internet-time
         print("fetching time from %s" % TIME_API)
-        self._rtc_int.datetime = self._get_localtime()
-        if self._rtc_ext:
-          self._rtc_ext.datetime = self._rtc_int.datetime
-        return True
-      elif self._rtc_ext:
-        # update internal RTC from external RTC
-        print("updating from external RTC")
+        self._rtc_int.datetime = self._get_remotetime()
+        self._rtc_ext.datetime = self._rtc_int.datetime
+      except:
+        # no internet-connection
+        print("using external RTC")
         self._rtc_int.datetime = self._rtc_ext.datetime
-        return True
-      else:
-        # no update-source
-        print("no time-source available")
-        return False
-    except:
-      return False
-    return True
+    elif self._rtc_int.datetime.tm_hour == 0 and self._rtc_int.datetime.tm_min < 2:
+      # update int from ext
+      print("using external RTC")
+      self._rtc_int.datetime = self._rtc_ext.datetime
+    else:
+      # no update, just return localtime
+      print("using internal RTC")
+    return time.localtime()
