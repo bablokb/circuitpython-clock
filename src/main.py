@@ -63,6 +63,7 @@ class App:
     self._display = board.DISPLAY
     self._group = displayio.Group()
     self._background()
+    self._create_fields()
 
     self._time = None
     self._day  = None
@@ -125,7 +126,7 @@ class App:
 
   # --- create text at given location   --------------------------------------
 
-  def create_text(self,pos,text):
+  def _create_text(self,pos,text):
     """ create text at given location """
 
     t = label.Label(FONT_S,text=text,color=BLACK,
@@ -133,6 +134,25 @@ class App:
     t.anchored_position = self._map[pos][0]
     self._group.append(t)
     return t
+
+  # --- create text-fields   -------------------------------------------------
+
+  def _create_fields(self):
+    """ create text fields for time/sensor """
+
+    # create time-label and center it
+    self._time = label.Label(FONT_L,text="00:00",
+                             color=BLACK,anchor_point=(0.5,0.5))
+    self._time.anchored_position = (self._display.width/2,self._display.height/2)
+    self._group.append(self._time)
+
+    # additional labels for day and date on the left side
+    self._day = self._create_text('NW',WDAY[0])
+    self._date = self._create_text('NE',"01.01.2022")
+
+    # labels for sensor-values
+    self._temp = self._create_text('SW',"20.0°C")
+    self._hum  = self._create_text('SE',"33%")
 
   # --- update datetime   ----------------------------------------------------
 
@@ -144,43 +164,17 @@ class App:
     day      = WDAY[now.tm_wday]
     date     = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
                                                now.tm_year%100)
-
-    if not self._time:
-      # create time-label and center it
-      self._time = label.Label(FONT_L,text=txt_time,
-                      color=BLACK,anchor_point=(0.5,0.5))
-      self._time.anchored_position = (self._display.width/2,self._display.height/2)
-      self._group.append(self._time)
-    else:
-      self._time.text = txt_time
-
-    # additional labels for day and date on the left side
-    if not self._day:
-      self._day = self.create_text('NW',day)
-    else:
-      self._day.text = day
-
-    if not self._date:
-      self._date = self.create_text('NE',date)
-    else:
-      self._date.text = date
+    self._time.text = txt_time
+    self._day.text = day
+    self._date.text = date
 
   # --- update temperature+humidity   ----------------------------------------
 
   def update_env_sensor(self):
     """ read sensor and update values """
 
-    temp = "{0:.1f}°C".format(self._sensor.temperature)
-    if not self._temp:
-      self._temp = self.create_text('SW',temp)
-    else:
-      self._temp.text = temp
-
-    hum = "{0:.0f}%".format(self._sensor.relative_humidity)
-    if not self._hum:
-      self._hum = self.create_text('SE',hum)
-    else:
-      self._hum.text = hum
+    self._temp.text = "{0:.1f}°C".format(self._sensor.temperature)
+    self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity)
 
   # --- update   -------------------------------------------------------------
 
