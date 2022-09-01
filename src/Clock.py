@@ -13,6 +13,7 @@ TIME_API  = "http://worldtimeapi.org/api/ip"
 import board
 import busio
 import time
+from   digitalio import DigitalInOut
 
 # ESP-01 support
 from adafruit_espatcontrol import (
@@ -51,22 +52,20 @@ class Clock:
     uart = busio.UART(board.TX,board.RX,
                       baudrate=11520,receiver_buffer_size=2048)
 
+    rst_pin = DigitalInOut(board.INT)
     esp = adafruit_espatcontrol.ESP_ATcontrol(
-      uart,115200,reset_pin=None,rts_pin=None,debug=secrets['debugflag'])
+      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=secrets['debugflag'])
     self._wifi = adafruit_espatcontrol_wifimanager.ESPAT_WiFiManager(
-      esp,secrets,None)
+      esp,secrets,None,secrets['retry'])
 
     # try to connect
-    retry = secrets['retry']
-    while True:
-      if retry == 0:
-        raise RuntimeError("failed to connect to %s" % secrets['ssid'])
-      try:
-        self._wifi.connect()
-        break
-      except Exception as e:
-        retry -= 1
-        continue
+    try:
+      print("trying to connect...",end='')
+      self._wifi.connect()
+      print("...done")
+    except Exception as e:
+      print("...failed: %r" % e)
+      raise RuntimeError("failed to connect to %s" % secrets['ssid'])
 
   # --- query local time from time-server   ---------------------------------
 
@@ -119,8 +118,9 @@ class Clock:
         print("fetching time from %s" % TIME_API)
         self._rtc_int.datetime = self._get_remotetime()
         self._rtc_ext.datetime = self._rtc_int.datetime
-      except:
+      except Exception as ex:
         # no internet-connection
+        print("exception: %r" % ex)
         print("using external RTC")
         self._rtc_int.datetime = self._rtc_ext.datetime
     elif self._rtc_int.datetime.tm_hour == 0 and self._rtc_int.datetime.tm_min < 2:
