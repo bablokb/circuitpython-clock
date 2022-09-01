@@ -37,6 +37,12 @@ class Clock:
 
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
+    self._esp     = None
+
+  # --- initialze ESP-01, connect to AP and to remote-port   -----------------
+
+  def _init_esp01(self):
+    """ initialize ESP-01 """
 
     uart = busio.UART(board.TX,board.RX,
                       baudrate=11520,receiver_buffer_size=2048)
@@ -44,11 +50,6 @@ class Clock:
     rst_pin = DigitalInOut(board.INT)
     self._esp = adafruit_espatcontrol.ESP_ATcontrol(
       uart,115200,reset_pin=rst_pin,rts_pin=None,debug=secrets['debugflag'])
-
-  # --- initialze ESP-01, connect to AP and to remote-port   -----------------
-
-  def _init_esp01(self):
-    """ initialize ESP-01 """
 
     self._wifi = adafruit_espatcontrol_wifimanager.ESPAT_WiFiManager(
       self._esp,secrets,None,secrets['retry'])
@@ -87,7 +88,8 @@ class Clock:
   def deep_sleep(self):
     """ send ESP01 to deep-sleep """
 
-    self._esp.deep_sleep(0)
+    if self._esp:
+      self._esp.deep_sleep(0)
 
   # --- return local time   -------------------------------------------------
 
