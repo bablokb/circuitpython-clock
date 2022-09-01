@@ -61,15 +61,6 @@ class App:
     """ constructor """
 
     self._display = board.DISPLAY
-    self._group = displayio.Group()
-    self._background()
-    self._create_fields()
-
-    self._time = None
-    self._day  = None
-    self._date = None
-    self._temp = None
-    self._hum  = None
 
     width  = self._display.width
     height = self._display.height
@@ -79,6 +70,10 @@ class App:
       'SW': ((GAP,       height-GAP), (0,1)),
       'SE': ((width-GAP, height-GAP), (1,1))
     }
+
+    self._group = displayio.Group()
+    self._background()
+    self._create_fields()
 
     # use DS3231 or PCF8523. Both use the same address, and all fields
     # relevant for us are in both classes. And neither class does a
@@ -154,12 +149,17 @@ class App:
     self._temp = self._create_text('SW',"20.0°C")
     self._hum  = self._create_text('SE',"33%")
 
+  # --- return localtime   ---------------------------------------------------
+
+  def localtime(self):
+    """ return localtime of clock """
+    return self._clock.localtime()
+
   # --- update datetime   ----------------------------------------------------
 
-  def update_datetime(self):
+  def update_datetime(self,now):
     """ read RTC and update values """
 
-    now      = self._clock.localtime()
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
     date     = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
@@ -178,8 +178,8 @@ class App:
 
   # --- update   -------------------------------------------------------------
 
-  def update(self):
-    self.update_datetime()
+  def update(self,now):
+    self.update_datetime(now)
     self.update_env_sensor()
     self._display.show(self._group)
     self._display.refresh()
@@ -189,11 +189,12 @@ class App:
 app = App()
 
 while True:
-  app.update()
-  now = time.localtime()
+  now = app.localtime()
+  app.update(now)
   w_time = 60 - now.tm_sec
-  print("waiting for %d seconds" % w_time)
-  wake_alarm = alarm.time.TimeAlarm(monotonic_time=time.monotonic()+w_time)
+  a_time = time.mktime(now) + w_time
+  print("deep-sleep for %d seconds" % w_time)
+  wake_alarm = alarm.time.TimeAlarm(epoch_time=a_time)
   alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
   #alarm.light_sleep_until_alarms(wake_alarm)
   #time.sleep(w_time)
