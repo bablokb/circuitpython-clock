@@ -80,9 +80,9 @@ class Clock:
     the_time = the_time.split(".")[0]
     hours, minutes, seconds = [int(x) for x in the_time.split(":")]
 
-    year_day = response["day_of_year"]
-    week_day = response["day_of_week"]
-    is_dst = response["dst"]
+    year_day = int(response["day_of_year"])
+    week_day = int(response["day_of_week"]) - 1
+    is_dst   = int(response["dst"])
 
     return time.struct_time(
       (year, month, mday, hours, minutes, seconds, week_day, year_day, is_dst))
@@ -116,17 +116,20 @@ class Clock:
           self._init_esp01();
         # update internal+external RTC from internet-time
         print("fetching time from %s" % TIME_API)
-        self._rtc_int.datetime = self._get_remotetime()
-        self._rtc_ext.datetime = self._rtc_int.datetime
+        ts = self._get_remotetime()               # N.B.: this is (!!)
+        self._rtc_int.datetime = ts               # necessary
+        self._rtc_ext.datetime = ts
       except Exception as ex:
         # no internet-connection
         print("exception: %r" % ex)
-        print("using external RTC")
-        self._rtc_int.datetime = self._rtc_ext.datetime
+        print("falling back to external RTC")
+        ts = self._rtc_ext.datetime
+        self._rtc_int.datetime = ts
     elif self._rtc_int.datetime.tm_hour == 0 and self._rtc_int.datetime.tm_min < 2:
       # update int from ext
       print("using external RTC")
-      self._rtc_int.datetime = self._rtc_ext.datetime
+      ts = self._rtc_ext.datetime
+      self._rtc_int.datetime = ts
     else:
       # no update, just return localtime
       print("using internal RTC")
