@@ -24,10 +24,8 @@ from adafruit_espatcontrol import (
 # try to import secrets
 try:
   from secrets import secrets
-  have_secrets = True
 except ImportError:
-  have_secrets = False
-
+  raise RuntimeError("WiFi settings need the file secrets.py")
 
 class Clock:
   """ Helper-class for time """
@@ -39,24 +37,21 @@ class Clock:
 
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
-    self._wifi    = None
+
+    uart = busio.UART(board.TX,board.RX,
+                      baudrate=11520,receiver_buffer_size=2048)
+
+    rst_pin = DigitalInOut(board.INT)
+    self._esp = adafruit_espatcontrol.ESP_ATcontrol(
+      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=secrets['debugflag'])
 
   # --- initialze ESP-01, connect to AP and to remote-port   -----------------
 
   def _init_esp01(self):
     """ initialize ESP-01 """
 
-    if not have_secrets:
-      raise RuntimeError("WiFi settings need the file secrets.py")
-
-    uart = busio.UART(board.TX,board.RX,
-                      baudrate=11520,receiver_buffer_size=2048)
-
-    rst_pin = DigitalInOut(board.INT)
-    esp = adafruit_espatcontrol.ESP_ATcontrol(
-      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=secrets['debugflag'])
     self._wifi = adafruit_espatcontrol_wifimanager.ESPAT_WiFiManager(
-      esp,secrets,None,secrets['retry'])
+      self._esp,secrets,None,secrets['retry'])
 
     # try to connect
     try:
@@ -87,6 +82,13 @@ class Clock:
     return time.struct_time(
       (year, month, mday, hours, minutes, seconds, week_day, year_day, is_dst))
 
+  # --- send ESP01 to deep-sleep   ------------------------------------------
+
+  def deep_sleep(self):
+    """ send ESP01 to deep-sleep """
+
+    self._esp.deep_sleep(0)
+
   # --- return local time   -------------------------------------------------
 
   def localtime(self,force_net=False):
@@ -112,8 +114,7 @@ class Clock:
 
     if do_update:
       try:
-        if not self._wifi:
-          self._init_esp01();
+        self._init_esp01()
         # update internal+external RTC from internet-time
         print("fetching time from %s" % TIME_API)
         ts = self._get_remotetime()               # N.B.: this is (!!)
