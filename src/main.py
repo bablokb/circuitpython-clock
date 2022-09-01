@@ -184,6 +184,17 @@ class App:
     self._display.show(self._group)
     self._display.refresh()
 
+  # --- send system to deep-sleep   ------------------------------------------
+
+  def deep_sleep(self,now):
+    """ send system to deep-sleep """
+
+    wait_time  = 60 - now.tm_sec
+    alarm_time = time.mktime(now) + wait_time
+    print("deep-sleep for %d seconds" % wait_time)
+    wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
+    alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
+
 # --- main loop   ------------------------------------------------------------
 
 app = App()
@@ -191,10 +202,4 @@ app = App()
 while True:
   now = app.localtime()
   app.update(now)
-  w_time = 60 - now.tm_sec
-  a_time = time.mktime(now) + w_time
-  print("deep-sleep for %d seconds" % w_time)
-  wake_alarm = alarm.time.TimeAlarm(epoch_time=a_time)
-  alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
-  #alarm.light_sleep_until_alarms(wake_alarm)
-  #time.sleep(w_time)
+  app.deep_sleep(now)
