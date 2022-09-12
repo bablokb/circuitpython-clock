@@ -3,6 +3,6 @@ work
 TODO
 doc.local
 test
-adafruit*
+lib/adafruit*
 *secrets.py
 boot_out.txt
