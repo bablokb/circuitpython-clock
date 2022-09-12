@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------
 
 import board
+import busio
 from   digitalio import DigitalInOut
 
 # ESP-01 support

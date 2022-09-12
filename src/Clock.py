@@ -11,7 +11,6 @@
 TIME_API  = "http://worldtimeapi.org/api/ip"
 
 import board
-import busio
 import time
 
 from Wifi import Wifi
