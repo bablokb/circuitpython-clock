@@ -13,19 +13,8 @@ TIME_API  = "http://worldtimeapi.org/api/ip"
 import board
 import busio
 import time
-from   digitalio import DigitalInOut
 
-# ESP-01 support
-from adafruit_espatcontrol import (
-    adafruit_espatcontrol,
-    adafruit_espatcontrol_wifimanager,
-)
-
-# try to import secrets
-try:
-  from secrets import secrets
-except ImportError:
-  raise RuntimeError("WiFi settings need the file secrets.py")
+from Wifi import Wifi
 
 class Clock:
   """ Helper-class for time """
@@ -37,31 +26,14 @@ class Clock:
 
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
-    self._esp     = None
+    self._wifi    = Wifi()
 
-  # --- initialze ESP-01, connect to AP and to remote-port   -----------------
+  # --- initialze wifi, connect to AP and to remote-port   -------------------
 
-  def _init_esp01(self):
-    """ initialize ESP-01 """
+  def _connect(self):
+    """ initialize wifi and connect to AP """
 
-    uart = busio.UART(board.TX,board.RX,
-                      baudrate=11520,receiver_buffer_size=2048)
-
-    rst_pin = DigitalInOut(board.INT)
-    self._esp = adafruit_espatcontrol.ESP_ATcontrol(
-      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=secrets['debugflag'])
-
-    self._wifi = adafruit_espatcontrol_wifimanager.ESPAT_WiFiManager(
-      self._esp,secrets,None,secrets['retry'])
-
-    # try to connect
-    try:
-      print("trying to connect...",end='')
-      self._wifi.connect()
-      print("...done")
-    except Exception as e:
-      print("...failed: %r" % e)
-      raise RuntimeError("failed to connect to %s" % secrets['ssid'])
+    self._wifi.connect()
 
   # --- query local time from time-server   ---------------------------------
 
@@ -83,13 +55,12 @@ class Clock:
     return time.struct_time(
       (year, month, mday, hours, minutes, seconds, week_day, year_day, is_dst))
 
-  # --- send ESP01 to deep-sleep   ------------------------------------------
+  # --- send wifi to deep-sleep   -------------------------------------------
 
   def deep_sleep(self):
-    """ send ESP01 to deep-sleep """
+    """ send wifi to deep-sleep """
 
-    if self._esp:
-      self._esp.deep_sleep(0)
+    self._wifi.deep_sleep()
 
   # --- return local time   -------------------------------------------------
 
@@ -116,7 +87,7 @@ class Clock:
 
     if do_update:
       try:
-        self._init_esp01()
+        self._wifi.connect()
         # update internal+external RTC from internet-time
         print("fetching time from %s" % TIME_API)
         ts = self._get_remotetime()               # N.B.: this is (!!)
