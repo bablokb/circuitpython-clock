@@ -1,6 +1,10 @@
 # ----------------------------------------------------------------------------
 # Wifi.py: Manage wifi-setup and requests
 #
+# The code is a bit tricky: it delegates the implementation of Wifi
+# to a second class which in turn is loaded from a board-specific
+# file. Please check the files in /config.
+#
 # Author: Bernhard Bablok
 # License: GPL3
 #
