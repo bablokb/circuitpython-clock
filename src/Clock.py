@@ -1,10 +1,15 @@
 # ----------------------------------------------------------------------------
-# Clock.py: Maintain time using ESP-01 and/or external RTC.
+# Clock.py: Wrapper for current (local) time.
+#
+# This class keeps and updates time from three sources:
+#   - the internal RTC
+#   - an external RTC
+#   - internet (from worldtimeapi.org)
 #
 # Author: Bernhard Bablok
 # License: GPL3
 #
-# Website: https://github.com/bablokb/circuitpython-badger-clock
+# Website: https://github.com/bablokb/circuitpython-clock
 #
 # ----------------------------------------------------------------------------
 

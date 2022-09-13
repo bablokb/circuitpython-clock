@@ -1,10 +1,16 @@
 # ----------------------------------------------------------------------------
-# main.py: driver program for Badger-Clock
+# main.py: driver program for Clock
+#
+# This program should work with any board with an integrated display.
+# It supports the following external components
+#   - DS3231 RTC
+#   - PCF8523 RTC
+#   - AHT20 temperature/humidity sensor
 #
 # Author: Bernhard Bablok
 # License: GPL3
 #
-# Website: https://github.com/bablokb/circuitpython-badger-clock
+# Website: https://github.com/bablokb/circuitpython-clock
 #
 # ----------------------------------------------------------------------------
 
