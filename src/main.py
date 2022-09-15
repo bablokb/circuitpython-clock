@@ -208,5 +208,8 @@ app = App()
 
 while True:
   now = app.localtime()
-  app.update(now)
-  app.deep_sleep(now)
+  try:
+    app.update(now)
+    app.deep_sleep(now)
+  except:
+    time.sleep(60)
