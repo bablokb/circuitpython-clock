@@ -14,6 +14,9 @@
 #
 # ----------------------------------------------------------------------------
 
+import time
+start = time.monotonic()
+
 import board
 import vectorio
 import time
@@ -155,17 +158,12 @@ class App:
     self._temp = self._create_text('SW',"20.0°C")
     self._hum  = self._create_text('SE',"33%")
 
-  # --- return localtime   ---------------------------------------------------
-
-  def localtime(self):
-    """ return localtime of clock """
-    return self._clock.localtime()
-
   # --- update datetime   ----------------------------------------------------
 
-  def update_datetime(self,now):
+  def update_datetime(self):
     """ read RTC and update values """
 
+    now = self._clock.localtime()
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
     date     = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
@@ -184,17 +182,20 @@ class App:
 
   # --- update   -------------------------------------------------------------
 
-  def update(self,now):
-    self.update_datetime(now)
+  def update(self):
+    """ update time, sensor-values and refresh display """
+    self.update_datetime()
     self.update_env_sensor()
     self._display.show(self._group)
+    time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
     self._display.refresh()
 
   # --- send system to deep-sleep   ------------------------------------------
 
-  def deep_sleep(self,now):
+  def deep_sleep(self):
     """ send system to deep-sleep """
 
+    now = self._clock.localtime()
     self._clock.deep_sleep()
     wait_time  = 60 - now.tm_sec
     alarm_time = time.mktime(now) + wait_time
@@ -205,11 +206,9 @@ class App:
 # --- main loop   ------------------------------------------------------------
 
 app = App()
-
+print("startup: %f s" % (time.monotonic()-start))
 while True:
-  now = app.localtime()
-  try:
-    app.update(now)
-    app.deep_sleep(now)
-  except:
-    time.sleep(60)
+  start = time.monotonic()
+  app.update()
+  print("update: %fs" % (time.monotonic()-start))
+  app.deep_sleep()
