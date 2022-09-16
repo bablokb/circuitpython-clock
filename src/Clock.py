@@ -97,9 +97,10 @@ class Clock:
         ts = self._get_remotetime()               # N.B.: this is (!!)
         self._rtc_int.datetime = ts               # necessary
         self._rtc_ext.datetime = ts
+        print("updated RTCs from %s" % TIME_API)
       except Exception as ex:
         # no internet-connection
-        print("exception: %r" % ex)
+        print("exception fetching time: %r" % ex)
         print("falling back to external RTC")
         ts = self._rtc_ext.datetime
         self._rtc_int.datetime = ts
