@@ -101,9 +101,13 @@ class Clock:
       except Exception as ex:
         # no internet-connection
         print("exception fetching time: %r" % ex)
-        print("falling back to external RTC")
-        ts = self._rtc_ext.datetime
-        self._rtc_int.datetime = ts
+        if self._rtc_ext.lost_power:
+          # value of ext. RTC might not be valid
+          print("falling back to internal RTC")
+        else:
+          print("falling back to external RTC")
+          ts = self._rtc_ext.datetime
+          self._rtc_int.datetime = ts
     elif self._rtc_int.datetime.tm_hour == 0 and self._rtc_int.datetime.tm_min < 2:
       # update int from ext
       print("using external RTC")

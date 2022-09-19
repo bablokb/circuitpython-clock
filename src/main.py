@@ -195,7 +195,7 @@ class App:
   def deep_sleep(self):
     """ send system to deep-sleep """
 
-    now = self._clock.localtime()
+    now = time.localtime()
     self._clock.deep_sleep()
     wait_time  = 60 - now.tm_sec
     alarm_time = time.mktime(now) + wait_time
