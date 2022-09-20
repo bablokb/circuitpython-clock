@@ -24,6 +24,10 @@ class WifiImpl:
 
     self._config  = config
     self._secrets = secrets
+    if not hasattr(self._secrets,'channel'):
+      self._secrets['channel'] = 0
+    if not hasattr(self._secrets,'timeout'):
+      self._secrets['timeout'] = None
 
   # --- initialze and connect to AP and to remote-port   ---------------------
 
@@ -34,7 +38,11 @@ class WifiImpl:
     retries = 3
     while True:
       try:
-        wifi.radio.connect(self._secrets["ssid"], self._secrets["password"])
+        wifi.radio.connect(self._secrets["ssid"],
+                           self._secrets["password"],
+                           channel = self._secrets["channel"],
+                           timeout = self._secrets["timeout"]
+                           )
         break
       except:
         print("could not connect to %s" % self._secrets["ssid"])
