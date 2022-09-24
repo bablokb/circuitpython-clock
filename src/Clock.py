@@ -17,11 +17,8 @@ TIME_API      = "http://worldtimeapi.org/api/ip"
 MEM_RTC_STATE = 0
 MEM_API_STATE = 1
 
-import board
 import time
 import microcontroller
-
-from Wifi import Wifi
 
 class Clock:
   """ Helper-class for time """
@@ -33,7 +30,7 @@ class Clock:
 
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
-    self._wifi    = Wifi()
+    self._wifi    = None
     self._mem     = microcontroller.nvm
 
   # --- initialze wifi, connect to AP and to remote-port   -------------------
@@ -41,6 +38,8 @@ class Clock:
   def _connect(self):
     """ initialize wifi and connect to AP """
 
+    from Wifi import Wifi
+    self._wifi = Wifi()
     self._wifi.connect()
 
   # --- query local time from time-server   ---------------------------------
@@ -104,7 +103,8 @@ class Clock:
   def deep_sleep(self):
     """ send wifi to deep-sleep """
 
-    self._wifi.deep_sleep()
+    if self._wifi:
+      self._wifi.deep_sleep()
 
   # --- return local time   -------------------------------------------------
 
@@ -130,7 +130,7 @@ class Clock:
 
     if do_update:
       try:
-        self._wifi.connect()
+        self._connect()
         # update internal+external RTC from internet-time
         print("fetching time from %s" % TIME_API)
         ts = self._get_remotetime()
