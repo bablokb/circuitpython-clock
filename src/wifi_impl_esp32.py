@@ -14,6 +14,8 @@ import time
 import socketpool
 import adafruit_requests
 
+wifi.radio.enabled = False
+
 class WifiImpl:
   """ Wifi-implementation for the ESP32 """
 
@@ -34,6 +36,7 @@ class WifiImpl:
   def connect(self):
     """ initialize ESP32 """
 
+    wifi.radio.enabled = True
     print("connecting to %s" % self._secrets["ssid"])
     retries = 3
     while True:
@@ -65,5 +68,6 @@ class WifiImpl:
   # --- no specific deep-sleep mode   ---------------------------------------
 
   def deep_sleep(self):
-    """ deep_sleep is noop """
-    pass
+    """ disable radio """
+
+    wifi.radio.enabled = False
