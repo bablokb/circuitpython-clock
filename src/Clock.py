@@ -56,7 +56,7 @@ class Clock:
     hours, minutes, seconds = [int(x) for x in the_time.split(":")]
 
     year_day = int(response["day_of_year"])
-    week_day = int(response["day_of_week"]) - 1
+    week_day = int(response["day_of_week"])
     is_dst   = int(response["dst"])
 
     return time.struct_time(
