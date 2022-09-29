@@ -17,11 +17,17 @@
 import time
 start = time.monotonic()
 
+import builtins
 import board
 import vectorio
 import time
 import alarm
 import rtc
+
+# import board-specific implementations
+config_file = "/config/"+board.board_id.replace(".","_")
+hw_impl = builtins.__import__(config_file,None,None,
+                              ["hw_setup","bat_level"],0)
 
 # DS3231 support
 import adafruit_ds3231
@@ -69,6 +75,7 @@ class App:
   def __init__(self):
     """ constructor """
 
+    self._hw_conf = hw_impl.hw_setup()
     self._display = board.DISPLAY
 
     width  = self._display.width
@@ -77,6 +84,7 @@ class App:
       'NW': ((GAP,       GAP),        (0,0)),
       'NE': ((width-GAP, GAP),        (1,0)),
       'SW': ((GAP,       height-GAP), (0,1)),
+      'S':  ((width/2,   height-GAP), (0.5,1)),
       'SE': ((width-GAP, height-GAP), (1,1))
     }
 
@@ -158,6 +166,9 @@ class App:
     self._temp = self._create_text('SW',"20.0°C")
     self._hum  = self._create_text('SE',"33%")
 
+    # label for battery-value
+    self._bat  = self._create_text('S',"7.7V")
+
   # --- update datetime   ----------------------------------------------------
 
   def update_datetime(self):
@@ -180,12 +191,21 @@ class App:
     self._temp.text = "{0:.1f}°C".format(self._sensor.temperature)
     self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity)
 
+  # --- update battery-level   -----------------------------------------------
+
+  def update_bat_level(self):
+    """ query battery level """
+
+    level = hw_impl.bat_level(self._hw_conf)
+    self._bat.text = "{0:.1f}V".format(level)
+
   # --- update   -------------------------------------------------------------
 
   def update(self):
     """ update time, sensor-values and refresh display """
     self.update_datetime()
     self.update_env_sensor()
+    self.update_bat_level()
     self._display.show(self._group)
     time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
     self._display.refresh()
