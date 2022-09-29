@@ -130,7 +130,7 @@ class App:
     """ all white background """
 
     palette    = displayio.Palette(1)
-    palette[0] = WHITE 
+    palette[0] = WHITE
     background = vectorio.Rectangle(pixel_shader=palette,
                                     width=self._display.width+1,
                                     height=self._display.height, x=0, y=0)
