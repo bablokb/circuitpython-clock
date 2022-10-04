@@ -25,9 +25,16 @@ import alarm
 import rtc
 
 # import board-specific implementations
-config_file = "/config/"+board.board_id.replace(".","_")
-hw_impl = builtins.__import__(config_file,None,None,
-                              ["hw_setup","bat_level"],0)
+try:
+  config_file = "/config/"+board.board_id.replace(".","_")
+  hw_impl = builtins.__import__(config_file,None,None,
+                                ["hw_setup","bat_level"],0)
+  print("using board-specific implementation")
+except:
+  config_file = "/config/def_config.py"
+  hw_impl = builtins.__import__(config_file,None,None,
+                                ["hw_setup","bat_level"],0)
+  print("using default implementation")
 
 # DS3231 support
 import adafruit_ds3231

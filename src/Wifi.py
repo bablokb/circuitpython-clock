@@ -18,8 +18,15 @@ import busio
 from   digitalio import DigitalInOut
 
 # import board-specific implementation-class
-config_file = "/config/"+board.board_id.replace(".","_")
-_temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
+try:
+  config_file = "/config/"+board.board_id.replace(".","_")
+  _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
+  print("using board-specific implementation")
+except:
+  config_file = "/config/def_config.py"
+  _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
+  print("using default implementation")
+
 config      = _temp.config
 WifiImpl    = _temp.WifiImpl
 
