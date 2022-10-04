@@ -57,6 +57,7 @@ class Clock:
 
     year_day = int(response["day_of_year"])
     week_day = int(response["day_of_week"])
+    week_day = 6 if week_day == 0 else week_day-1
     is_dst   = int(response["dst"])
 
     return time.struct_time(
