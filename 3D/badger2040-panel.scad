@@ -36,59 +36,56 @@ d_panel_cyl_off = 2.9 + w2;        // offsets center of holes
 
 g_button     = 0.1;                // gap around buttons
 x_button     = 4.2 + 2*g_button;   // width of button
-x_button_off = 16.7-g_button+w2;   // offset in  x-dimension for horizontal buttons
-x_button_o   = 2.1+g_button+w2;    // offset from rim vertical buttons
+x_button_off = 24;                 // offset in x-dimension from center for horizontal buttons
 y_button     = 3.2 + 2*g_button;   // depth of button
-y_button_off = 14.99-g_button+w2;  // offset in y-dimensions for vertical buttons
-y_button_o   = 1.3+g_button+w2;    // offset from rim horizontal buttons
+y_button_off = 7.27;               // offset in y-dimension from center for vertical buttons
 
 // --- the base plate with cutouts   --------------------------------------------------------------
 
 module plate() {
   difference() {
     cuboid([x1_panel,y1_panel,z_panel],
-            rounding=r_panel, anchor=BOTTOM+FRONT+LEFT,
+            rounding=r_panel, anchor=BOTTOM+CENTER,
             edges="Z");
-    translate([0,y2_panel_off,-fuzz])
+    translate([-(x1_panel-x2_panel)/2,0,-fuzz])
       cuboid([x2_panel,y2_panel,z2_panel+fuzz],
-              anchor=BOTTOM+FRONT+LEFT);
-    translate([x3_panel_off,y3_panel_off,-fuzz])
+              anchor=BOTTOM+CENTER);
+    translate([0,0,-fuzz])
       cuboid([x3_panel,y3_panel,z_panel+2*fuzz],
-              anchor=BOTTOM+FRONT+LEFT);
+              anchor=BOTTOM+CENTER);
   }
 }
 
 // --- four cylinders for the montage holes   ----------------------------------------------------
   
 module montage_cyls() {
-  translate([d_panel_cyl_off,d_panel_cyl_off,0])
-     cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+FRONT+LEFT);
-  translate([x1_panel-d_panel_cyl-d_panel_cyl_off,d_panel_cyl_off,-fuzz])
-     cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+FRONT+LEFT);
-  translate([d_panel_cyl_off,y1_panel-d_panel_cyl-d_panel_cyl_off,-fuzz])
-     cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+FRONT+LEFT);
-  translate([x1_panel-d_panel_cyl-d_panel_cyl_off,y1_panel-d_panel_cyl-d_panel_cyl_off,-fuzz])
-     cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+FRONT+LEFT);
+  x_off = x1_panel/2-d_panel_cyl_off;
+  y_off = y1_panel/2-d_panel_cyl_off;
+  translate([-x_off,-y_off,0]) cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+CENTER);
+  translate([-x_off,+y_off,0]) cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+CENTER);
+  translate([+x_off,-y_off,0]) cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+CENTER);
+  translate([+x_off,+y_off,0]) cylinder(d=d_panel_cyl,h=h_panel_cyl,anchor=TOP+CENTER);
 }
 
 // --- cutout for buttons   ----------------------------------------------------------------------
 
 module button(orient="H") {
   if (orient == "H") {
-    translate([0,0,-fuzz]) cuboid([x_button,y_button,z_panel+2*fuzz],anchor=BOTTOM+FRONT);
+    translate([0,0,-fuzz]) cuboid([x_button,y_button,z_panel+2*fuzz],anchor=BOTTOM+CENTER);
   } else {
     translate([0,0,-fuzz]) cuboid([y_button,x_button,z_panel+2*fuzz],anchor=BOTTOM+CENTER);
   }
 }
 
 module buttons() {
-  translate([x_button_off+x_button/2,y_button_o,0]) button();             // button a
-  translate([x1_panel/2,y_button_o,0]) button();                          // button b
-  translate([x1_panel-x_button/2-x_button_off,y_button_o,0]) button();    // button c
-  translate([x1_panel-y_button/2-x_button_o,
-                     y_button_off+x_button/2,0]) button("V");             // down
-  translate([x1_panel-y_button/2-x_button_o,
-                     y1_panel-x_button/2-y_button_off,0]) button("V");    // up  
+  y_off_abc = -y1_panel/2 + d_panel_cyl_off;
+  translate([-x_button_off,y_off_abc,0]) button();                        // button a
+  translate([0,            y_off_abc,0]) button();                        // button b
+  translate([+x_button_off,y_off_abc,0]) button();                        // button c
+
+  x_off_du = x1_panel/2 - d_panel_cyl_off;
+  translate([x_off_du,-y_button_off,0]) button("V");                      // down
+  translate([x_off_du,+y_button_off,0]) button("V");                      // up
 }
 
 // --- final frame   -----------------------------------------------------------------------------
