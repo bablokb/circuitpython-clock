@@ -31,7 +31,7 @@ try:
                                 ["hw_setup","bat_level"],0)
   print("using board-specific implementation")
 except:
-  config_file = "/config/def_config.py"
+  config_file = "/config/def_config"
   hw_impl = builtins.__import__(config_file,None,None,
                                 ["hw_setup","bat_level"],0)
   print("using default implementation")

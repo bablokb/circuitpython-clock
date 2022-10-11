@@ -23,7 +23,7 @@ try:
   _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
   print("using board-specific implementation")
 except:
-  config_file = "/config/def_config.py"
+  config_file = "/config/def_config"
   _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
   print("using default implementation")
 
