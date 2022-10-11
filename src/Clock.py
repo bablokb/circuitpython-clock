@@ -13,12 +13,15 @@
 #
 # ----------------------------------------------------------------------------
 
-TIME_API      = "http://worldtimeapi.org/api/ip"
 MEM_RTC_STATE = 0
 MEM_API_STATE = 1
 
 import time
 import microcontroller
+try:
+  from secrets import timeapi_url
+except ImportError:
+  raise RuntimeError("please set the variable 'timeapi_url' in secrets.py")
 
 class Clock:
   """ Helper-class for time """
