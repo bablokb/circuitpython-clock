@@ -50,7 +50,7 @@ class Clock:
   def _get_remotetime(self):
     """ query time from time-server """
 
-    response = self._wifi.get(TIME_API).json()
+    response = self._wifi.get(timeapi_url).json()
 
     current_time = response["datetime"]
     the_date, the_time = current_time.split("T")
@@ -81,7 +81,7 @@ class Clock:
     """ set state of external RTC """
 
     if ts:
-      print("updated RTCs from %s" % TIME_API)
+      print("updated RTCs from %s" % timeapi_url)
       self._rtc_int.datetime = ts
       self._rtc_ext.datetime = ts
       if self._mem[MEM_RTC_STATE] != 1:
@@ -136,7 +136,7 @@ class Clock:
       try:
         self._connect()
         # update internal+external RTC from internet-time
-        print("fetching time from %s" % TIME_API)
+        print("fetching time from %s" % timeapi_url)
         ts = self._get_remotetime()
         self._set_rtc_state(ts)
         if self._mem[MEM_API_STATE] != 1:
