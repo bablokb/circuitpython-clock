@@ -52,6 +52,9 @@ class Clock:
 
     response = self._wifi.get(timeapi_url).json()
 
+    if 'struct_time' in response:
+      return time.struct_time(tuple(response['struct_time']))
+
     current_time = response["datetime"]
     the_date, the_time = current_time.split("T")
     year, month, mday = [int(x) for x in the_date.split("-")]
