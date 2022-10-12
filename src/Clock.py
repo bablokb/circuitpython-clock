@@ -118,10 +118,14 @@ class Clock:
   def localtime(self,force_upd=False):
     """ return localtime, updating RTCs if necessary """
 
-    print("rtc_int:    %02d:%02d" %
-          (self._rtc_int.datetime.tm_hour,self._rtc_int.datetime.tm_min))
-    print("rtc_ext:    %02d:%02d" %
-          (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min))
+    print("rtc_int:    %02d:%02d %02d.%02d.%04d" %
+          (self._rtc_int.datetime.tm_hour,self._rtc_int.datetime.tm_min,
+           self._rtc_int.datetime.tm_mday,self._rtc_int.datetime.tm_mon,
+           self._rtc_int.datetime.tm_year))
+    print("rtc_ext:    %02d:%02d %02d.%02d.%04d" %
+          (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min,
+           self._rtc_ext.datetime.tm_mday,self._rtc_ext.datetime.tm_mon,
+           self._rtc_ext.datetime.tm_year))
     print("lost_power: %r" % self._rtc_ext.lost_power)
     print("RTC-state:  %d" % self._mem[MEM_RTC_STATE])
     print("API-state:  %d" % self._mem[MEM_API_STATE])
