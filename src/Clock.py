@@ -19,9 +19,9 @@ MEM_API_STATE = 1
 import time
 import microcontroller
 try:
-  from secrets import timeapi_url
+  from settings import TIMEAPI_URL
 except ImportError:
-  raise RuntimeError("please set the variable 'timeapi_url' in secrets.py")
+  raise RuntimeError("please set the variable 'TIMEAPI_URL' in settings.py")
 
 class Clock:
   """ Helper-class for time """
@@ -50,7 +50,7 @@ class Clock:
   def _get_remotetime(self):
     """ query time from time-server """
 
-    response = self._wifi.get(timeapi_url).json()
+    response = self._wifi.get(TIMEAPI_URL).json()
 
     if 'struct_time' in response:
       return time.struct_time(tuple(response['struct_time']))
@@ -84,7 +84,7 @@ class Clock:
     """ set state of external RTC """
 
     if ts:
-      print("updated RTCs from %s" % timeapi_url)
+      print("updated RTCs from %s" % TIMEAPI_URL)
       self._rtc_int.datetime = ts
       self._rtc_ext.datetime = ts
       if self._mem[MEM_RTC_STATE] != 1:
@@ -143,7 +143,7 @@ class Clock:
       try:
         self._connect()
         # update internal+external RTC from internet-time
-        print("fetching time from %s" % timeapi_url)
+        print("fetching time from %s" % TIMEAPI_URL)
         ts = self._get_remotetime()
         self._set_rtc_state(ts)
         if self._mem[MEM_API_STATE] != 1:
