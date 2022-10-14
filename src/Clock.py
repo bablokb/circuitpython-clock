@@ -19,7 +19,7 @@ MEM_API_STATE = 1
 import time
 import microcontroller
 try:
-  from settings import TIMEAPI_URL
+  from settings import TIMEAPI_URL, TIMEAPI_UPD_HOUR, TIMEAPI_UPD_MIN
 except ImportError:
   raise RuntimeError("please set the variable 'TIMEAPI_URL' in settings.py")
 
@@ -134,12 +134,14 @@ class Clock:
       force_upd or                             # explicit request
       self._rtc_ext.lost_power or              # power loss detected by external RTC
       self._mem[MEM_RTC_STATE] != 1 or         # external RTC not valid
-      self._mem[MEM_API_STATE] != 1 or         # last API-call not valid
-      (self._rtc_int.datetime.tm_hour == 3 and # at 03:00 every day
-       self._rtc_int.datetime.tm_min == 0)
+      self._mem[MEM_API_STATE] != 1            # last API-call not valid
+    )
+    do_update_daily = (
+      self._rtc_int.datetime.tm_hour == TIMEAPI_UPD_HOUR and
+      self._rtc_int.datetime.tm_min == TIMEAPI_UPD_MIN
     )
 
-    if do_update:
+    if do_update or do_update_daily:
       try:
         self._connect()
         # update internal+external RTC from internet-time
@@ -152,7 +154,8 @@ class Clock:
         # no internet-connection or time-api fails
         print("exception fetching time: %r" % ex)
         self._set_rtc_state(None)
-        if self._mem[MEM_API_STATE] == 1:
+        if self._mem[MEM_API_STATE] == 1 and do_update:
+          # a failing daily update alone should not trigger new updates
           self._mem[MEM_API_STATE] = 0
     else:
       self._set_rtc_state(None)
