@@ -17,6 +17,7 @@ MEM_RTC_STATE = 0
 MEM_API_STATE = 1
 
 import time
+import alarm
 import microcontroller
 try:
   from settings import TIMEAPI_URL, TIMEAPI_UPD_HOUR, TIMEAPI_UPD_MIN
@@ -34,7 +35,13 @@ class Clock:
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
     self._wifi    = None
-    self._mem     = microcontroller.nvm
+    try:
+      if alarm.sleep_memory:
+        print("using sleep-memory for status")
+        self._mem = alarm.sleep_memory
+    except:
+      print("using nvram for status")
+      self._mem = microcontroller.nvm
 
   # --- initialze wifi, connect to AP and to remote-port   -------------------
 
