@@ -36,6 +36,15 @@ except:
                                 ["hw_setup","bat_level"],0)
   print("using default implementation")
 
+try:
+  from settings import TEMP_OFFSET
+except ImportError:
+  TEMP_OFFSET = 0.0
+try:
+  from settings import HUM_OFFSET
+except ImportError:
+  HUM_OFFSET = 0.0
+
 # DS3231 support
 import adafruit_ds3231
 
@@ -195,8 +204,8 @@ class App:
   def update_env_sensor(self):
     """ read sensor and update values """
 
-    self._temp.text = "{0:.1f}°C".format(self._sensor.temperature)
-    self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity)
+    self._temp.text = "{0:.1f}°C".format(self._sensor.temperature+TEMP_OFFSET)
+    self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity+HUM_OFFSET)
 
   # --- update battery-level   -----------------------------------------------
 
