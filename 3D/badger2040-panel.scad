@@ -13,16 +13,14 @@
 include <dimensions.scad>
 include <BOSL2/std.scad>
 
-x1_panel = 86.2 + 2*w2;            // outer dimension
-x2_panel = 79.7 + w2;              // dimension full z-height
+x1_panel = 85.6 + 2*w2;            // outer dimension
+x2_panel = 81.5 + w2;              // dimension full z-height
 x3_panel = 66.9;                   // dimension inner cutout
 x3_panel_off = 9.35 + w2;          //    offset
 
 y1_panel = 48.7 + 2*w2;            // outer dimension
-y2_panel = 37.2;                   // dimension full z-height
-y2_panel_off = 5.8 + w2;           //    offset
+y2_panel = 39.3;                   // dimension full z-height
 y3_panel = 29.06;                  // dimension inner cutout
-y3_panel_off = 10.15 + w2;         //    offset
 
 z2_panel = 1.6;                    // panel depth above pcb
 z3_panel = 0.4;                    // panel depth above display
@@ -34,7 +32,7 @@ d_panel_cyl     = 1.9;             // diameter cylinders for montage holes
 h_panel_cyl     = 1.8;             // hight    cylinders for montage holes
 d_panel_cyl_off = 2.9 + w2;        // offsets center of holes
 
-g_button     = 0.1;                // gap around buttons
+g_button     = 0.2;                // gap around buttons
 x_button     = 4.2 + 2*g_button;   // width of button
 x_button_off = 24;                 // offset in x-dimension from center for horizontal buttons
 y_button     = 3.2 + 2*g_button;   // depth of button
