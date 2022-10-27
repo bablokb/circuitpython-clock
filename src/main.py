@@ -27,14 +27,13 @@ import rtc
 # import board-specific implementations
 try:
   config_file = "/config/"+board.board_id.replace(".","_")
-  hw_impl = builtins.__import__(config_file,None,None,
-                                ["hw_setup","bat_level"],0)
+  hw_impl = builtins.__import__(config_file,None,None,["config"],0)
   print("using board-specific implementation")
 except:
   config_file = "/config/def_config"
-  hw_impl = builtins.__import__(config_file,None,None,
-                                ["hw_setup","bat_level"],0)
+  hw_impl = builtins.__import__(config_file,None,None,["config"],0)
   print("using default implementation")
+  raise
 
 try:
   from settings import TEMP_OFFSET
@@ -91,8 +90,8 @@ class App:
   def __init__(self):
     """ constructor """
 
-    self._hw_conf = hw_impl.hw_setup()
-    self._display = board.DISPLAY
+    self._hw        = hw_impl.config
+    self._display   = self._hw.display()
 
     width  = self._display.width
     height = self._display.height
@@ -212,7 +211,7 @@ class App:
   def update_bat_level(self):
     """ query battery level """
 
-    level = hw_impl.bat_level(self._hw_conf)
+    level = self._hw.bat_level()
     self._bat.text = "{0:.1f}V".format(level)
 
   # --- update   -------------------------------------------------------------

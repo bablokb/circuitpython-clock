@@ -10,23 +10,21 @@
 
 import board
 from analogio import AnalogIn
-from digitalio import DigitalInOut, Direction
-
-class Options:
-  pass
-
-config = Options()
-#config.PIN_TX  = board.TX
-#config.PIN_RX  = board.RX 
-#config.PIN_RST = board.XXX
-
 from wifi_impl_noop import WifiImpl as WifiImpl
 
-def hw_setup():
-  """ setup specific hardware """
-  hw_config = Options()
-  return hw_config
+class HWConfig:
+  def __init__(self):
+    """ constructor """
+    #self.PIN_TX  = board.TX
+    #self.PIN_RX  = board.RX
+    #self.PIN_RST = board.INT
 
-def bat_level(hw_conf):
-  """ return battery level """
-  return 0.0
+  def display(self):
+    """ return display """
+    return board.DISPLAY
+
+  def bat_level(self):
+    """ return battery level """
+    return 0.0
+
+config = HWConfig()
