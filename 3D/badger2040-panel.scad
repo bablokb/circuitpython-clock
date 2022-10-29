@@ -108,4 +108,4 @@ module frame() {
   }
 }
 
-frame();
+xrot(180) frame();
