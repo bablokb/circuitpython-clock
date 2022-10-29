@@ -56,6 +56,16 @@ z_wall = 15;
 
 y_usb     =  9.00;                 // y-dim usb-c (mechanical drawing: 8.94)
 y_usb_off = 10.15 + rim;           // offset from bottom
+z_usb     =  5;
 
 x_bb     = 17;                     // x-dim back buttons (min: 12.2)
 x_bb_off = 14.5 + rim;             // offset from left
+z_bb     = 10;
+
+z_body = 30;                       // depth/height of the body
+
+z_bcon     = z_body/3;             // base-connector
+z_bcon_off = z_body/3;
+
+x_cable = 10;                      // cable-hole
+z_cable = 10;
