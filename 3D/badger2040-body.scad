@@ -40,15 +40,15 @@ module cutouts() {
        cuboid([x_bb,w4+2*fuzz,z_bb+fuzz],anchor=BOTTOM+CENTER);
 
   // base-connector
-  translate([-x1_panel/2+x1_panel/4,
+  translate([-x1_panel/2+x1_panel/8,
              -y1_panel/2+w4/2-fuzz,z_bcon_off])
        cuboid([w4+gap/2,w4+2*fuzz,z_bcon],anchor=BOTTOM+CENTER);
-  translate([+x1_panel/2-x1_panel/4,
+  translate([+x1_panel/2-x1_panel/8,
              -y1_panel/2+w4/2-fuzz,z_bcon_off])
        cuboid([w4+gap/2,w4+2*fuzz,z_bcon],anchor=BOTTOM+CENTER);
 
   // cable hole
-  translate([0,-y1_panel/2+w4/2-fuzz,(z_body-z_cable)/2])
+  translate([+1.5*x_cable,-y1_panel/2+w4/2-fuzz,(z_body-z_cable)/2])
        cuboid([x_cable,w4+2*fuzz,z_cable],anchor=BOTTOM+CENTER);
   
 }
