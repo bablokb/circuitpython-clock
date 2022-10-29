@@ -55,9 +55,11 @@ module walls() {
             cuboid([x_wall-2*w2,y_wall-2*w2,z_wall+2*fuzz],
                    rounding=r_panel, anchor=TOP+CENTER,
                    edges="Z");
+    // cutout left side (with USB-C)
     translate([-x_wall/2,0,fuzz])
              cuboid([rim+fuzz,y2_panel,z_wall+2*fuzz],anchor=TOP+CENTER);
-    translate([-x_wall/2+x_bb_off,y_wall/2,fuzz])
+    // cutout back-buttons
+    translate([-x1_panel/2+x_bb_off,y_wall/2,fuzz])
              cuboid([x_bb,rim+fuzz,z_wall+2*fuzz],anchor=TOP+CENTER);
   }
 }
