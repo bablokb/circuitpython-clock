@@ -20,7 +20,7 @@ gap = 0.2;                 // gap pcb to case
 
 // badger2040 specific dimensions   ------------------------------------------
 
-rim = w4+ gap + w2 + gap;
+rim = w4 + gap/2 + w2 + gap;       // outer walls, gap/2, inner walls, gap
 
 x1_panel = 85.6 + 2*rim;           // outer dimension
 x2_panel = 81.5 + rim;             // dimension full z-height
@@ -50,11 +50,11 @@ y_button_off = 7.27;               // offsets buttons up+down (from center)
 x_led_off = 12.7 + rim;            // offset of activity-led
 y_led_off = xy_panel_cyl_off;
 
-x_wall = x1_panel - 2*w4 - 2*gap;  // outer wall dimensions
-y_wall = y1_panel - 2*w4 - 2*gap;
-z_wall = 15;
+x_wall = x1_panel - 2*w4 - gap;    // inner wall dimensions (outside)
+y_wall = y1_panel - 2*w4 - gap;
+z_wall = 10.2;
 
-y_usb     =  9.00;                 // y-dim usb-c (mechanical drawing: 8.94)
+y_usb     = 13.00;                 // y-dim usb-c (for plugs with larger shields)
 y_usb_off = 10.15 + rim;           // offset from bottom
 z_usb     =  5;
 
