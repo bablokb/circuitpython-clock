@@ -16,7 +16,7 @@ include <BOSL2/std.scad>
 // --- the corpus   ------------------------------------------------------------
 
 module corpus() {
-    difference() {
+  difference() {
     cuboid([x1_panel,y1_panel,z_body],
             rounding=r_panel, anchor=BOTTOM+CENTER,
             edges="Z");
@@ -24,6 +24,22 @@ module corpus() {
       cuboid([x1_panel-2*w4,y1_panel-2*w4,z_body+2*fuzz],
               rounding=r_panel, anchor=BOTTOM+CENTER,
               edges="Z");
+  }
+}
+
+// --- back-button cover   ---------------------------------------------------
+
+module bb_cover() {
+  x_dim = x_bb+2*w2;
+  y_dim = y_bb+2*w2;
+  zrot(180) yrot(180) union() {
+    rect_tube(size=[x_dim,y_dim],wall=w2,h=h_bb);
+    zrot(90) translate([0,0,h_bb]) difference() {
+      prismoid(size1=[y_dim,x_dim],
+               size2=[0,x_dim], shift=[-y_dim/2,0], h=x_dim);
+      prismoid(size1=[y_dim-2*w2,x_dim-2*w2],
+               size2=[0,x_dim-2*w2], shift=[-(y_dim-2*w2)/2,0], h=x_dim-4*w2);
+    }
   }
 }
 
@@ -57,7 +73,10 @@ module cutouts() {
 
 module body() {
   difference() {
-    corpus();
+    union() {
+      corpus();
+      translate([-x1_panel/2+x_bb_off,y1_panel/2-y_bb/2-w4,z_body]) bb_cover();
+    }
     cutouts();
   }
 }
