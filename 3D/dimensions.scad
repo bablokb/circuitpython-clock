@@ -61,8 +61,8 @@ z_usb     =  5;
 x_bb     = 17;                     // x-dim back buttons (min: 12.2)
 y_bb     =  5 + rim;               // badger-boarder to inner side of buttons
 x_bb_off = 14.5 + rim;             // offset from left
-z_bb     = 10;                     // cutout height
 h_bb     =  5;                     // cover height
+z_bb     = h_bb+x_bb-2*w2;         // cutout height
 
 z_body = 30;                       // depth/height of the body
 
