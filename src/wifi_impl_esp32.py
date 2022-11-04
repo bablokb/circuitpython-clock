@@ -24,9 +24,9 @@ class WifiImpl:
     self._config  = config
     self._secrets = secrets
     if not hasattr(self._secrets,'channel'):
-      self._secrets['channel'] = 0
+      self._secrets.channel = 0
     if not hasattr(self._secrets,'timeout'):
-      self._secrets['timeout'] = None
+      self._secrets.timeout = None
 
   # --- initialze and connect to AP and to remote-port   ---------------------
 
@@ -34,24 +34,24 @@ class WifiImpl:
     """ initialize ESP32 """
 
     import wifi
-    print("connecting to %s" % self._secrets["ssid"])
-    retries = 3
+    print("connecting to %s" % self._secrets.ssid)
+    retries = self._secrets.retry
     while True:
       try:
-        wifi.radio.connect(self._secrets["ssid"],
-                           self._secrets["password"],
-                           channel = self._secrets["channel"],
-                           timeout = self._secrets["timeout"]
+        wifi.radio.connect(self._secrets.ssid,
+                           self._secrets.password,
+                           channel = self._secrets.channel,
+                           timeout = self._secrets.timeout
                            )
         break
       except:
-        print("could not connect to %s" % self._secrets["ssid"])
+        print("could not connect to %s" % self._secrets.ssid)
         retries -= 1
         if retries == 0:
           raise
         time.sleep(1)
         continue
-    print("connected to %s" % self._secrets["ssid"])
+    print("connected to %s" % self._secrets.ssid)
     pool = socketpool.SocketPool(wifi.radio)
     self._requests = adafruit_requests.Session(pool)
 

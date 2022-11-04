@@ -31,10 +31,6 @@ config      = _temp.config
 WifiImpl    = _temp.WifiImpl
 
 # try to import secrets
-try:
-  from secrets import secrets
-except ImportError:
-  raise RuntimeError("WiFi settings need the file secrets.py")
-
+from settings import secrets
 def Wifi():
   return WifiImpl(config,secrets)

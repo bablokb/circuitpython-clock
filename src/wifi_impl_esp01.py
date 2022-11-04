@@ -40,10 +40,14 @@ class WifiImpl:
 
     rst_pin = DigitalInOut(self._config.PIN_RST)
     self._esp = adafruit_espatcontrol.ESP_ATcontrol(
-      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=self._secrets['debugflag'])
+      uart,115200,reset_pin=rst_pin,rts_pin=None,debug=self._secrets.debugflag)
 
     self._wifi = adafruit_espatcontrol_wifimanager.ESPAT_WiFiManager(
-      self._esp,self._secrets,None,self._secrets['retry'])
+      self._esp,
+      {'ssid':     self._secrets.ssid,
+       'password': self._secrets.password
+       },
+      None,self._secrets.retry)
 
     # try to connect
     try:
@@ -52,7 +56,7 @@ class WifiImpl:
       print("...done")
     except Exception as e:
       print("...failed: %r" % e)
-      raise RuntimeError("failed to connect to %s" % self._secrets['ssid'])
+      raise RuntimeError("failed to connect to %s" % self._secrets.ssid)
 
   # --- execute get-request   -----------------------------------------------
 
