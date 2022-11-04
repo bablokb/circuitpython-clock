@@ -35,14 +35,8 @@ except:
   print("using default implementation")
   raise
 
-try:
-  from settings import TEMP_OFFSET
-except ImportError:
-  TEMP_OFFSET = 0.0
-try:
-  from settings import HUM_OFFSET
-except ImportError:
-  HUM_OFFSET = 0.0
+# import settings
+from settings import *
 
 # DS3231 support
 import adafruit_ds3231
@@ -184,6 +178,24 @@ class App:
     # label for battery-value
     self._bat  = self._create_text('S',"7.7V")
 
+  # --- query wait-time for inactive period   --------------------------------
+
+  def _get_wait_time(self):
+    """ query wait-time in seconds until ACTIVE_TIME_START """
+
+    start_h = int(ACTIVE_START_TIME[0:2])
+    start_m = int(ACTIVE_START_TIME[3:5])
+    end_h   = int(ACTIVE_END_TIME[0:2])
+    end_m   = int(ACTIVE_END_TIME[3:5])
+
+    if not end_h:
+      end_h = 24
+    if start_h < end_h or start_h == end_h and start_m < end_m:
+      start_h += 24
+
+    return ((start_h-end_h-1)*3600 +
+            (start_m+60-end_m)*60)
+
   # --- update datetime   ----------------------------------------------------
 
   def update_datetime(self):
@@ -232,7 +244,17 @@ class App:
 
     now = time.localtime()
     self._clock.deep_sleep()
-    wait_time  = 60 - now.tm_sec
+    if (now.tm_hour == int(ACTIVE_END_TIME[0:2]) and
+        now.tm_min  == int(ACTIVE_END_TIME[3:5])):
+      print("end of active time, taking a long nap")
+      if ACTIVE_START_TIME:
+        wait_time = self._get_wait_time()
+      else:
+        print("deep-sleep until button-press")
+        alarm.exit_and_deep_sleep_until_alarms(self._hw.pin_alarm())
+    else:
+      wait_time  = 60 - now.tm_sec
+
     alarm_time = time.mktime(now) + wait_time
     print("deep-sleep for %d seconds" % wait_time)
     wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)

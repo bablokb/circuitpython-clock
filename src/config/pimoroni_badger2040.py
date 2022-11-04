@@ -9,6 +9,7 @@
 # ----------------------------------------------------------------------------
 
 import board
+import alarm
 from analogio import AnalogIn
 from digitalio import DigitalInOut, Direction
 from wifi_impl_esp01 import WifiImpl as WifiImpl
@@ -36,5 +37,9 @@ class HWConfig:
     level = self._bat_mon.value/65535*vdd*3
     self._ref_pow.value = 0
     return level
+
+  def pin_alarm(self):
+    """ return pre-configured pin-alarm """
+    return alarm.pin.PinAlarm(board.SW_A,value=True,edge=True,pull=True)
 
 config = HWConfig()
