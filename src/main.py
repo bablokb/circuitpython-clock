@@ -36,7 +36,7 @@ except:
   raise
 
 # import settings
-from settings import *
+from settings import settings
 
 # DS3231 support
 import adafruit_ds3231
@@ -183,10 +183,10 @@ class App:
   def _get_wait_time(self):
     """ query wait-time in seconds until ACTIVE_TIME_START """
 
-    start_h = int(ACTIVE_START_TIME[0:2])
-    start_m = int(ACTIVE_START_TIME[3:5])
-    end_h   = int(ACTIVE_END_TIME[0:2])
-    end_m   = int(ACTIVE_END_TIME[3:5])
+    start_h = int(settings.ACTIVE_START_TIME[0:2])
+    start_m = int(settings.ACTIVE_START_TIME[3:5])
+    end_h   = int(settings.ACTIVE_END_TIME[0:2])
+    end_m   = int(settings.ACTIVE_END_TIME[3:5])
 
     if not end_h:
       end_h = 24
@@ -215,8 +215,10 @@ class App:
   def update_env_sensor(self):
     """ read sensor and update values """
 
-    self._temp.text = "{0:.1f}°C".format(self._sensor.temperature+TEMP_OFFSET)
-    self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity+HUM_OFFSET)
+    self._temp.text = "{0:.1f}°C".format(self._sensor.temperature +
+                                         settings.TEMP_OFFSET)
+    self._hum.text  = "{0:.0f}%".format(self._sensor.relative_humidity +
+                                        settings.HUM_OFFSET)
 
   # --- update battery-level   -----------------------------------------------
 
@@ -244,10 +246,10 @@ class App:
 
     now = time.localtime()
     self._clock.deep_sleep()
-    if (now.tm_hour == int(ACTIVE_END_TIME[0:2]) and
-        now.tm_min  == int(ACTIVE_END_TIME[3:5])):
+    if (now.tm_hour == int(settings.ACTIVE_END_TIME[0:2]) and
+        now.tm_min  == int(settings.ACTIVE_END_TIME[3:5])):
       print("end of active time, taking a long nap")
-      if ACTIVE_START_TIME:
+      if settings.ACTIVE_START_TIME:
         wait_time = self._get_wait_time()
       else:
         print("deep-sleep until button-press")

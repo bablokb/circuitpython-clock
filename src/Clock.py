@@ -4,7 +4,7 @@
 # This class keeps and updates time from three sources:
 #   - the internal RTC
 #   - an external RTC
-#   - internet (from worldtimeapi.org)
+#   - internet (e.g. from worldtimeapi.org)
 #
 # Author: Bernhard Bablok
 # License: GPL3
@@ -19,10 +19,7 @@ MEM_API_STATE = 1
 import time
 import alarm
 import microcontroller
-try:
-  from settings import TIMEAPI_URL, TIMEAPI_UPD_HOUR, TIMEAPI_UPD_MIN
-except ImportError:
-  raise RuntimeError("please set the variable 'TIMEAPI_URL' in settings.py")
+from settings import settings
 
 class Clock:
   """ Helper-class for time """
@@ -57,7 +54,7 @@ class Clock:
   def _get_remotetime(self):
     """ query time from time-server """
 
-    response = self._wifi.get(TIMEAPI_URL).json()
+    response = self._wifi.get(settings.TIMEAPI_URL).json()
 
     if 'struct_time' in response:
       return time.struct_time(tuple(response['struct_time']))
@@ -91,7 +88,7 @@ class Clock:
     """ set state of external RTC """
 
     if ts:
-      print("updated RTCs from %s" % TIMEAPI_URL)
+      print("updated RTCs from %s" % settings.TIMEAPI_URL)
       self._rtc_int.datetime = ts
       self._rtc_ext.datetime = ts
       if self._mem[MEM_RTC_STATE] != 1:
@@ -144,15 +141,15 @@ class Clock:
       self._mem[MEM_API_STATE] != 1            # last API-call not valid
     )
     do_update_daily = (
-      self._rtc_int.datetime.tm_hour == TIMEAPI_UPD_HOUR and
-      self._rtc_int.datetime.tm_min == TIMEAPI_UPD_MIN
+      self._rtc_int.datetime.tm_hour == settings.TIMEAPI_UPD_HOUR and
+      self._rtc_int.datetime.tm_min == settings.TIMEAPI_UPD_MIN
     )
 
     if do_update or do_update_daily:
       try:
         self._connect()
         # update internal+external RTC from internet-time
-        print("fetching time from %s" % TIMEAPI_URL)
+        print("fetching time from %s" % settings.TIMEAPI_URL)
         ts = self._get_remotetime()
         self._set_rtc_state(ts)
         if self._mem[MEM_API_STATE] != 1:
