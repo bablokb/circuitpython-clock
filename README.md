@@ -104,7 +104,7 @@ of your device:
      sensor is perfect and these settings allow some simple calibration.  
      The third block defines the active time. If `ACTIVE_START_TIME` is `None`,
      the clock enters a deep-sleep with pin-alarm. For Magtag and
-     Badger2040 the left pin (D15 or SW_A respectively) is serves as the
+     Badger2040 the left pin (D15 or SW_A respectively) serves as the
      wakeup-pin.
 
          TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
