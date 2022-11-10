@@ -19,10 +19,6 @@ class HWConfig:
     """ constructor """
     self._bat_mon = AnalogIn(board.BATTERY)
 
-  def display(self):
-    """ return display """
-    return board.DISPLAY
-
   def bat_level(self):
     """ return battery level """
     return (self._bat_mon.value / 65535.0) * 3.3 * 2

@@ -26,10 +26,6 @@ class HWConfig:
     self._ref_pow = DigitalInOut(board.VREF_POWER)
     self._ref_pow.direction = Direction.OUTPUT
 
-  def display(self):
-    """ return display """
-    return board.DISPLAY
-
   def bat_level(self):
     """ return battery level """
     self._ref_pow.value = 1

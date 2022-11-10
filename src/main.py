@@ -85,7 +85,7 @@ class App:
     """ constructor """
 
     self._hw        = hw_impl.config
-    self._display   = self._hw.display()
+    self._display   = settings.display
 
     width  = self._display.width
     height = self._display.height
