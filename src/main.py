@@ -36,7 +36,7 @@ except:
   raise
 
 # import settings
-from settings import settings
+from configuration import settings
 
 # display-support
 import displayio
@@ -87,12 +87,12 @@ class App:
       'SE': ((width-GAP, height-GAP), (1,1))
     }
 
+    self._clock  = Clock(settings.rtc_ext,rtc.RTC())
+    self._sensor = settings.sensor
+
     self._group = displayio.Group()
     self._background()
     self._create_fields()
-
-    self._clock  = Clock(settings.rtc_ext,rtc.RTC())
-    self._sensor = settings.sensor
 
   # --- create background   --------------------------------------------------
 
