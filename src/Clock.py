@@ -157,7 +157,7 @@ class Clock:
       self._rtc_int.datetime.tm_min == settings.TIMEAPI_UPD_MIN
     )
 
-    if do_update or do_update_daily:
+    if settings.wifi_module and (do_update or do_update_daily):
       try:
         self._connect()
         # update internal+external RTC from internet-time

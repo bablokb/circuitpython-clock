@@ -27,7 +27,7 @@ except:
   print("using default implementation")
 
 # import wifi-implementation
-WifiImpl = builtins.__import__(settings.wifi_module,None,None,["WifiImpl"],0)
-
-def Wifi():
-  return WifiImpl.WifiImpl(cfg.config,secrets)
+if settings.wifi_module:
+  WifiImpl = builtins.__import__(settings.wifi_module,None,None,["WifiImpl"],0)
+  def Wifi():
+    return WifiImpl.WifiImpl(cfg.config,secrets)
