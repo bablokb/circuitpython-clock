@@ -5,6 +5,6 @@ doc.local
 test
 src/lib/adafruit*
 *secrets.py
-*settings.py
+*configuration.py
 boot_out.txt
 *.stl
