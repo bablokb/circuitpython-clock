@@ -19,7 +19,7 @@ MEM_API_STATE = 1
 import time
 import alarm
 import microcontroller
-from settings import settings
+from configuration import settings
 
 class Clock:
   """ Helper-class for time """
@@ -75,13 +75,13 @@ class Clock:
 
   # --- check state of external RTC   ---------------------------------------
 
-  def _check_rtc(self):
-    """ check if external RTC has a technically valid time """
+  def _check_rtc(self,rtc):
+    """ check if RTC has a technically valid time """
 
-    if not self._rtc_ext:
+    if not rtc:
       return False
 
-    ts = self._rtc_ext.datetime
+    ts = rtc.datetime
     return (ts.tm_year > 2021 and ts.tm_mon < 13 and ts.tm_mday < 32 and
             ts.tm_hour < 25   and ts.tm_min < 60 and ts.tm_sec   < 60)
 
@@ -98,7 +98,7 @@ class Clock:
         if self._mem[MEM_RTC_STATE] != 1:
           self._mem[MEM_RTC_STATE] = 1
     else:
-      state = self._mem[MEM_RTC_STATE] == 1 and self._check_rtc()
+      state = self._mem[MEM_RTC_STATE] == 1 and self._check_rtc(self._rtc_ext)
       if state:
         # external RTC claims to be valid and passes the heuristic check
         print("using external RTC")
@@ -148,6 +148,8 @@ class Clock:
       self._rtc_ext and (
         self._rtc_ext.lost_power or            # power loss detected by external RTC
         self._mem[MEM_RTC_STATE] != 1 ) or     # external RTC not valid
+      (not self._rtc_ext and not               # no external RTC, so
+       self._check_rtc(self._rtc_int)) or      #   check internal rtc
       self._mem[MEM_API_STATE] != 1            # last API-call not valid
     )
     do_update_daily = (
