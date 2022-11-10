@@ -14,23 +14,20 @@
 
 import builtins
 import board
-import busio
-from   digitalio import DigitalInOut
+from   configuration import secrets, settings
 
 # import board-specific implementation-class
 try:
   config_file = "/config/"+board.board_id.replace(".","_")
-  _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
+  cfg         = builtins.__import__(config_file,None,None,["config"],0)
   print("using board-specific implementation")
 except:
   config_file = "/config/def_config"
-  _temp       = builtins.__import__(config_file,None,None,["config","WifiImpl"],0)
+  cfg         = builtins.__import__(config_file,None,None,["config"],0)
   print("using default implementation")
 
-config      = _temp.config
-WifiImpl    = _temp.WifiImpl
+# import wifi-implementation
+WifiImpl = builtins.__import__(settings.wifi_module,None,None,["WifiImpl"],0)
 
-# try to import secrets
-from settings import secrets
 def Wifi():
-  return WifiImpl(config,secrets)
+  return WifiImpl.WifiImpl(cfg.config,secrets)
