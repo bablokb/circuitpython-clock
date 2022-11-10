@@ -38,12 +38,6 @@ except:
 # import settings
 from settings import settings
 
-# DS3231 support
-import adafruit_ds3231
-
-# PCF8523 support
-import adafruit_pcf8523
-
 # AHT20
 import adafruit_ahtx0
 import adafruit_bus_device
@@ -101,29 +95,7 @@ class App:
     self._background()
     self._create_fields()
 
-    # use DS3231 or PCF8523. Both use the same address, and all fields
-    # relevant for us are in both classes. And neither class does a
-    # check of the chip-id.
-    i2c = board.I2C()
-    try:
-      try:
-        rtc_ext = adafruit_ds3231.DS3231(i2c)
-        if not rtc_ext.alarm2[1]:
-          raise
-        print("using DS3231")
-      except Exception as ex:
-        try:
-          rtc_ext = adafruit_pcf8523.PCF8523(i2c)
-          print("using PCF8523")
-        except:
-          raise
-    except:
-      rtc_ext = Values()
-      rtc_ext.datetime = time.struct_time((2022, 4, 22, 13, 12, 47, 4, -1, -1))
-      rtc_ext.lost_power = True
-      print("emulating external RTC")
-
-    self._clock = Clock(rtc_ext,rtc.RTC())
+    self._clock = Clock(settings.rtc_ext,rtc.RTC())
 
     try:
       self._sensor = adafruit_ahtx0.AHTx0(i2c)

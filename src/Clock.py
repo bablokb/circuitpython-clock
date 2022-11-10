@@ -78,6 +78,9 @@ class Clock:
   def _check_rtc(self):
     """ check if external RTC has a technically valid time """
 
+    if not self._rtc_ext:
+      return False
+
     ts = self._rtc_ext.datetime
     return (ts.tm_year > 2021 and ts.tm_mon < 13 and ts.tm_mday < 32 and
             ts.tm_hour < 25   and ts.tm_min < 60 and ts.tm_sec   < 60)
@@ -90,9 +93,10 @@ class Clock:
     if ts:
       print("updated RTCs from %s" % settings.TIMEAPI_URL)
       self._rtc_int.datetime = ts
-      self._rtc_ext.datetime = ts
-      if self._mem[MEM_RTC_STATE] != 1:
-        self._mem[MEM_RTC_STATE] = 1
+      if self._rtc_ext:
+        self._rtc_ext.datetime = ts
+        if self._mem[MEM_RTC_STATE] != 1:
+          self._mem[MEM_RTC_STATE] = 1
     else:
       state = self._mem[MEM_RTC_STATE] == 1 and self._check_rtc()
       if state:
@@ -104,10 +108,12 @@ class Clock:
         # invalid value of external RTC
         print("using internal RTC, clearing ext RTC-state")
         self._mem[MEM_RTC_STATE] = 0
-      else:
+      elif self._rtc_ext:
         print("using internal RTC, setting external RTC from internal")
         int_ts = self._rtc_int.datetime          # a valid ext. RTC will allow
         self._rtc_ext.datetime = int_ts          # us to use RTC-alarms
+      else:
+        print("using internal RTC")
 
   # --- send wifi to deep-sleep   -------------------------------------------
 
@@ -126,18 +132,22 @@ class Clock:
           (self._rtc_int.datetime.tm_hour,self._rtc_int.datetime.tm_min,
            self._rtc_int.datetime.tm_mday,self._rtc_int.datetime.tm_mon,
            self._rtc_int.datetime.tm_year))
-    print("rtc_ext:    %02d:%02d %02d.%02d.%04d" %
-          (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min,
-           self._rtc_ext.datetime.tm_mday,self._rtc_ext.datetime.tm_mon,
-           self._rtc_ext.datetime.tm_year))
-    print("lost_power: %r" % self._rtc_ext.lost_power)
+    if self._rtc_ext:
+      print("rtc_ext:    %02d:%02d %02d.%02d.%04d" %
+            (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min,
+             self._rtc_ext.datetime.tm_mday,self._rtc_ext.datetime.tm_mon,
+             self._rtc_ext.datetime.tm_year))
+      print("lost_power: %r" % self._rtc_ext.lost_power)
+    else:
+      print("rtc_ext: not available")
     print("RTC-state:  %d" % self._mem[MEM_RTC_STATE])
     print("API-state:  %d" % self._mem[MEM_API_STATE])
 
     do_update = (
       force_upd or                             # explicit request
-      self._rtc_ext.lost_power or              # power loss detected by external RTC
-      self._mem[MEM_RTC_STATE] != 1 or         # external RTC not valid
+      self._rtc_ext and (
+        self._rtc_ext.lost_power or            # power loss detected by external RTC
+        self._mem[MEM_RTC_STATE] != 1 ) or     # external RTC not valid
       self._mem[MEM_API_STATE] != 1            # last API-call not valid
     )
     do_update_daily = (
