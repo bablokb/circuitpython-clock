@@ -85,35 +85,57 @@ Installation
 Configuration
 -------------
 
-For configuration, you need two python-files in the root-directory
-of your device:
+For configuration, you need the python-file `settings.py` in the
+root-directory of your device. You can find a template in
+`template/settings.py'. Copy this file to your device and adapt it to
+your needs.
 
-  - `secrets.py`: here you configure your SSID and WLAN-password
+    class Settings:
+      pass
+    
+    settings = Settings()
+    secrets  = Settings()
+    
+    # --- WLAN credentials
+    
+    secrets.ssid      = 'your_ssid'
+    secrets.password  = 'your_password'
+    secrets.retry     = 1
+    secrets.debugflag = False
+    secrets.channel   = 6        # optional
+    secrets.timeout   = 10       # optional
+    
+    # --- update via time-api
+    
+    settings.TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
+    settings.TIMEAPI_UPD_HOUR = 8
+    settings.TIMEAPI_UPD_MIN  = 30
+    
+    # --- sensor settings
+    
+    settings.TEMP_OFFSET = 0
+    settings.HUM_OFFSET  = 0
+    
+    # --- active time
+    
+    #settings.ACTIVE_END_TIME   = "-1:00"           # always active
+    settings.ACTIVE_END_TIME    = "22:00"
+    #settings.ACTIVE_START_TIME = "07:00"           # start at time-point
+    settings.ACTIVE_START_TIME  = None              # start using a button
 
-         secrets = {
-           'ssid' : 'my-ssid',
-           'password' : 'my-password',
-           'retry': 1,
-           'debugflag': False
-         }
 
-  - `settings.py`: here you can configure various aspects of the software.
-     The first block deals with updates of the local-time. In the example
-     time is updated at 08:30 every day.  
-     The second block configures offsets for temperature and humidity. No
-     sensor is perfect and these settings allow some simple calibration.  
-     The third block defines the active time. If `ACTIVE_START_TIME` is `None`,
-     the clock enters a deep-sleep with pin-alarm. For Magtag and
-     Badger2040 the left pin (D15 or SW_A respectively) serves as the
-     wakeup-pin.
+The first block defines the WLAN credentials. Setting the channel will
+speed-up connections, but this only works if your router uses a fixed
+channel.
 
-         TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
-         TIMEAPI_UPD_HOUR = 8
-         TIMEAPI_UPD_MIN  = 30
-     
-         TEMP_OFFSET = -0.3
-         HUM_OFFSET  = -3
-     
-         ACTIVE_END_TIME   = "22:00"
-         #ACTIVE_START_TIME = "07:00"
-         ACTIVE_START_TIME = None
+The second block defines the URL of the time-api server and the time of
+the regular daily update.
+
+The next block configures offsets for temperature and humidity. No
+sensor is perfect and these settings allow some simple calibration.  
+
+The final block defines the active time. If `ACTIVE_START_TIME` is `None`,
+the clock enters a deep-sleep with pin-alarm. Magtag and
+Badger2040 use the left pin (D15 or SW_A respectively) for this purpose.
+
+If you want the clock to be 100% active, set the end-time to a negative value.
