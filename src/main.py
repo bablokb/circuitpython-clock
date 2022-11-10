@@ -2,10 +2,10 @@
 # main.py: driver program for Clock
 #
 # This program should work with any board with an integrated display.
-# It supports the following external components
-#   - DS3231 RTC
-#   - PCF8523 RTC
-#   - AHT20 temperature/humidity sensor
+# Use settings.py to define your external components:
+#   - RTC: e.g. DS3231 or PCF8523
+#   - temperatur/humidity: e.g. AHT20
+#   - wifi
 #
 # Author: Bernhard Bablok
 # License: GPL3
@@ -37,10 +37,6 @@ except:
 
 # import settings
 from settings import settings
-
-# AHT20
-import adafruit_ahtx0
-import adafruit_bus_device
 
 # display-support
 import displayio
@@ -95,15 +91,8 @@ class App:
     self._background()
     self._create_fields()
 
-    self._clock = Clock(settings.rtc_ext,rtc.RTC())
-
-    try:
-      self._sensor = adafruit_ahtx0.AHTx0(i2c)
-    except:
-      # use emulation
-      self._sensor                   = Values()
-      self._sensor.temperature       = 22.5
-      self._sensor.relative_humidity = 44
+    self._clock  = Clock(settings.rtc_ext,rtc.RTC())
+    self._sensor = settings.sensor
 
   # --- create background   --------------------------------------------------
 
@@ -143,9 +132,10 @@ class App:
     self._day = self._create_text('NW',WDAY[0])
     self._date = self._create_text('NE',"01.01.2022")
 
-    # labels for sensor-values
-    self._temp = self._create_text('SW',"20.0°C")
-    self._hum  = self._create_text('SE',"33%")
+    if self._sensor:
+      # labels for sensor-values
+      self._temp = self._create_text('SW',"20.0°C")
+      self._hum  = self._create_text('SE',"33%")
 
     # label for battery-value
     self._bat  = self._create_text('S',"7.7V")
@@ -205,7 +195,8 @@ class App:
   def update(self):
     """ update time, sensor-values and refresh display """
     self.update_datetime()
-    self.update_env_sensor()
+    if self._sensor:
+      self.update_env_sensor()
     self.update_bat_level()
     self._display.show(self._group)
     time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
