@@ -1,10 +1,27 @@
+# ----------------------------------------------------------------------------
+# template/configuration.py: runtime configuration settings template.
+#
+# Author: Bernhard Bablok
+# License: GPL3
+#
+# Website: https://github.com/bablokb/circuitpython-clock
+#
+# ----------------------------------------------------------------------------
+
+import board
+import adafruit_pcf8523        # PCF8523 support
+#import adafruit_ds3231        # DS3231 support
+import adafruit_ahtx0          # AHT20
+import adafruit_bus_device
+
 class Settings:
   pass
 
 settings = Settings()
 secrets  = Settings()
+pins     = Settings()
 
-# --- WLAN credentials
+# --- WLAN credentials ---
 
 secrets.ssid      = 'your_ssid'
 secrets.password  = 'your_password'
@@ -13,20 +30,46 @@ secrets.debugflag = False
 secrets.channel   = 6        # optional
 secrets.timeout   = 10       # optional
 
-# --- update via time-api
+# --- update via time-api ---
 
 settings.TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
 settings.TIMEAPI_UPD_HOUR = 8
 settings.TIMEAPI_UPD_MIN  = 30
 
-# --- sensor settings
+# --- sensor settings ---
 
 settings.TEMP_OFFSET = 0
 settings.HUM_OFFSET  = 0
 
-# --- active time
+# --- active time ---
 
 #settings.ACTIVE_END_TIME   = "-1:00"           # always active
 settings.ACTIVE_END_TIME    = "22:00"
 #settings.ACTIVE_START_TIME = "07:00"           # start at time-point
 settings.ACTIVE_START_TIME  = None              # start using a button
+
+# --- hardware-setup ---
+
+i2c = board.I2C()
+settings.display = lambda: board.DISPLAY        # use builtin display
+
+#settings.rtc_ext = lambda: None                # no external RTC
+settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
+#settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
+
+#settings.sensor = lambda: None                 # no temp/humidity sensor
+settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
+
+#settings.wifi_module = None                    # no WIFI
+settings.wifi_module = "wifi_impl_esp01"        # implementing module
+#settings.wifi_module = "wifi_impl_builtin"     # implementing module
+
+# --- pins ---
+
+pins.PIN_TX    = board.TX                       # for ESP-01S
+pins.PIN_RX    = board.RX                       # for ESP-01S
+pins.PIN_RST   = board.INT                      # for ESP-01S
+
+pins.PIN_ALARM = None                           # no wakup pin
+#pins.PIN_ALARM = board.SW_A                    # wakeup pin Badger2040
+#pins.PIN_ALARM = board.D15                     # wakeup pin Magtag
