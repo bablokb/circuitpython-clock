@@ -75,7 +75,7 @@ class App:
     """ constructor """
 
     self._hw        = hw_impl.config
-    self._display   = settings.display
+    self._display   = settings.display()
 
     width  = self._display.width
     height = self._display.height
@@ -87,8 +87,8 @@ class App:
       'SE': ((width-GAP, height-GAP), (1,1))
     }
 
-    self._clock  = Clock(settings.rtc_ext,rtc.RTC())
-    self._sensor = settings.sensor
+    self._clock  = Clock(settings.rtc_ext(),rtc.RTC())
+    self._sensor = settings.sensor()
 
     self._group = displayio.Group()
     self._background()
