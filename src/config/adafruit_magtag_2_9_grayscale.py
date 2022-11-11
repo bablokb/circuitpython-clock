@@ -11,6 +11,7 @@
 import board
 import alarm
 from analogio import AnalogIn
+from configuration import pins
 
 class HWConfig:
   def __init__(self):
@@ -23,6 +24,6 @@ class HWConfig:
 
   def pin_alarm(self):
     """ return pre-configured pin-alarm """
-    return alarm.pin.PinAlarm(board.D15,value=False,edge=False,pull=True)
+    return alarm.pin.PinAlarm(pins.PIN_ALARM,value=False,edge=False,pull=True)
 
 config = HWConfig()

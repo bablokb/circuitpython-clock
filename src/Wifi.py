@@ -14,20 +14,10 @@
 
 import builtins
 import board
-from   configuration import secrets, settings
-
-# import board-specific implementation-class
-try:
-  config_file = "/config/"+board.board_id.replace(".","_")
-  cfg         = builtins.__import__(config_file,None,None,["config"],0)
-  print("using board-specific implementation")
-except:
-  config_file = "/config/def_config"
-  cfg         = builtins.__import__(config_file,None,None,["config"],0)
-  print("using default implementation")
+from   configuration import secrets, settings, pins
 
 # import wifi-implementation
 if settings.wifi_module:
   WifiImpl = builtins.__import__(settings.wifi_module,None,None,["WifiImpl"],0)
   def Wifi():
-    return WifiImpl.WifiImpl(cfg.config,secrets)
+    return WifiImpl.WifiImpl(pins,secrets)

@@ -12,14 +12,11 @@ import board
 import alarm
 from analogio import AnalogIn
 from digitalio import DigitalInOut, Direction
+from configuration import pins
 
 class HWConfig:
   def __init__(self):
     """ constructor """
-    self.PIN_TX  = board.TX
-    self.PIN_RX  = board.RX
-    self.PIN_RST = board.INT
-
     self._bat_mon = AnalogIn(board.VBAT_SENSE)
     self._ref_1V2 = AnalogIn(board.REF_1V2)
     self._ref_pow = DigitalInOut(board.VREF_POWER)
@@ -35,6 +32,6 @@ class HWConfig:
 
   def pin_alarm(self):
     """ return pre-configured pin-alarm """
-    return alarm.pin.PinAlarm(board.SW_A,value=True,edge=True,pull=True)
+    return alarm.pin.PinAlarm(pins.PIN_ALARM,value=True,edge=True,pull=True)
 
 config = HWConfig()
