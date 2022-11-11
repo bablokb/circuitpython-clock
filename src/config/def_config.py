@@ -9,22 +9,21 @@
 # ----------------------------------------------------------------------------
 
 import board
+import alarm
 from analogio import AnalogIn
-from wifi_impl_noop import WifiImpl as WifiImpl
+from configuration import pins
 
 class HWConfig:
   def __init__(self):
     """ constructor """
-    #self.PIN_TX  = board.TX
-    #self.PIN_RX  = board.RX
-    #self.PIN_RST = board.INT
-
-  def display(self):
-    """ return display """
-    return board.DISPLAY
+    pass
 
   def bat_level(self):
     """ return battery level """
     return 0.0
+
+  def pin_alarm(self):
+    """ return pre-configured pin-alarm """
+    return alarm.pin.PinAlarm(pins.PIN_ALARM,value=False,edge=True,pull=True)
 
 config = HWConfig()
