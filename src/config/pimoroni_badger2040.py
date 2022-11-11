@@ -12,7 +12,6 @@ import board
 import alarm
 from analogio import AnalogIn
 from digitalio import DigitalInOut, Direction
-from wifi_impl_esp01 import WifiImpl as WifiImpl
 
 class HWConfig:
   def __init__(self):

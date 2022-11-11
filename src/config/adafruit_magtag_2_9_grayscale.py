@@ -12,8 +12,6 @@ import board
 import alarm
 from analogio import AnalogIn
 
-from wifi_impl_esp32 import WifiImpl as WifiImpl
-
 class HWConfig:
   def __init__(self):
     """ constructor """

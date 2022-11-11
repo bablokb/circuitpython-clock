@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# wifi_impl_esp32.py: Wifi-implementation for builtin ESP32
+# wifi_impl_builtin.py: Wifi-implementation for builtin wifi
 #
 # Author: Bernhard Bablok
 # License: GPL3
@@ -14,7 +14,7 @@ import socketpool
 import adafruit_requests
 
 class WifiImpl:
-  """ Wifi-implementation for the ESP32 """
+  """ Wifi-implementation for MCU with integrated wifi """
 
   # --- constructor   --------------------------------------------------------
 
