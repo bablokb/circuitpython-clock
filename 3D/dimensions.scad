@@ -56,12 +56,13 @@ z_wall = 10.2;
 
 y_usb     = 13.00;                 // y-dim usb-c (for plugs with larger shields)
 y_usb_off = 10.15 + rim;           // offset from bottom
-z_usb     =  5;
+z_usb     = 8.5;
 
-x_bb     = 17;                     // x-dim back buttons (min: 12.2)
-y_bb     =  5 + rim;               // badger-boarder to inner side of buttons
+x_bb     = 15.5;                   // x-dim back buttons (min: 12.2)
+y_bb     =  3.2 + rim;             // badger-boarder to inner side of buttons
 x_bb_off = 14.5 + rim;             // offset from left
 h_bb     =  5;                     // cover height
+h_bb_off = 1.8;
 z_bb     = h_bb+x_bb-2*w2;         // cutout height
 
 z_body = 30;                       // depth/height of the body

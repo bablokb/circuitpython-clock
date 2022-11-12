@@ -59,8 +59,8 @@ module walls() {
     translate([-x_wall/2,0,fuzz])
              cuboid([rim+fuzz,y2_panel,z_wall+2*fuzz],anchor=TOP+CENTER);
     // cutout back-buttons
-    translate([-x1_panel/2+x_bb_off-w4,y_wall/2,fuzz])
-             cuboid([x_bb+2*w4,rim+fuzz,z_wall+2*fuzz],anchor=TOP+CENTER);
+    translate([-x1_panel/2+x_bb_off,y_wall/2,fuzz])
+             cuboid([x_bb+2*w2+gap,rim+fuzz,z_wall+2*fuzz],anchor=TOP+CENTER);
   }
 }
 
