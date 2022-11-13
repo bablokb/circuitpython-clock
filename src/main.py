@@ -36,7 +36,7 @@ except:
   raise
 
 # import settings
-from configuration import settings
+from configuration import settings, ui
 
 # display-support
 import displayio
@@ -45,20 +45,17 @@ from adafruit_bitmap_font import bitmap_font
 
 from Clock import Clock
 
-# fonts and colors
-FONT_S = bitmap_font.load_font("fonts/DejaVuSans-Bold-24-min.bdf")
-FONT_L = bitmap_font.load_font("fonts/DejaVuSans-Bold-52-min.bdf")
-BLACK      = 0x000000
-WHITE      = 0xFFFFFF
+# --- UI configuration   -----------------------------------------------------
+
+FONT_S   = bitmap_font.load_font(ui.font_s)
+FONT_L   = bitmap_font.load_font(ui.font_l)
+FG_COLOR = ui.fg_color
+BG_COLOR = ui.bg_color
+WDAY     = ui.day_names
+DATE_FMT = ui.date_fmt
 
 # keep a small gap at the border of the display
 GAP =  2
-
-# map wday-numbers to names of day
-WDAY = {
-  0: 'Montag',      1: 'Dienstag',  2: 'Mittwoch',
-  3: 'Donnerstag',  4: 'Freitag',   5: 'Samstag',  6: 'Sonntag'
-  }
 
 # --- value holder (for emulation)   -----------------------------------------
 
@@ -97,10 +94,10 @@ class App:
   # --- create background   --------------------------------------------------
 
   def _background(self):
-    """ all white background """
+    """ monochrome background """
 
     palette    = displayio.Palette(1)
-    palette[0] = WHITE
+    palette[0] = BG_COLOR
     background = vectorio.Rectangle(pixel_shader=palette,
                                     width=self._display.width+1,
                                     height=self._display.height, x=0, y=0)
@@ -111,7 +108,7 @@ class App:
   def _create_text(self,pos,text):
     """ create text at given location """
 
-    t = label.Label(FONT_S,text=text,color=BLACK,
+    t = label.Label(FONT_S,text=text,color=FG_COLOR,
                     anchor_point=self._map[pos][1])
     t.anchored_position = self._map[pos][0]
     self._group.append(t)
@@ -124,7 +121,7 @@ class App:
 
     # create time-label and center it
     self._time = label.Label(FONT_L,text="00:00",
-                             color=BLACK,anchor_point=(0.5,0.5))
+                             color=FG_COLOR,anchor_point=(0.5,0.5))
     self._time.anchored_position = (self._display.width/2,self._display.height/2)
     self._group.append(self._time)
 
@@ -166,7 +163,7 @@ class App:
     now = self._clock.localtime()
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
-    date     = "{0:02d}.{1:02d}.{2:02d}".format(now.tm_mday,now.tm_mon,
+    date     = DATE_FMT.format(now.tm_mday,now.tm_mon,
                                                now.tm_year%100)
     self._time.text = txt_time
     self._day.text = day
