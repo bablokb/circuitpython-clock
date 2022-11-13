@@ -25,9 +25,9 @@ You need the following components:
 
   - a MCU with CircuitPython support
   - an e-ink display
-  - an ESP-01S
-  - an external RTC
-  - a temperature/humidity sensor
+  - an ESP-01S (optional)
+  - an external RTC (optional)
+  - a temperature/humidity sensor (optional)
 
 Out of the box the software supports:
 
@@ -35,7 +35,7 @@ Out of the box the software supports:
   - RTC: DS3231 and PCF8523
   - AHT20 (for temperature and humidity)
 
-Porting to other hardware should be easy.
+Porting to other hardware should be easy (see section "Hardware Hacking" below).
 
 
 Wiring
@@ -85,57 +85,54 @@ Installation
 Configuration
 -------------
 
-For configuration, you need the python-file `settings.py` in the
+For configuration, you need the python-file `configuration.py` in the
 root-directory of your device. You can find a template in
-`template/settings.py'. Copy this file to your device and adapt it to
+`template/configuration.py'. Copy this file to your device and adapt it to
 your needs.
 
-    class Settings:
-      pass
+There a few things you should change:
+
+  - WLAN credentials
+
+        secrets.ssid      = 'your_ssid'
+        secrets.password  = 'your_password'
+        secrets.retry     = 1
+        secrets.debugflag = False
+        #secrets.channel   = 6        # optional
+        #secrets.timeout   = 10       # optional
+
+  - timepoint of daily update of time via internet
     
-    settings = Settings()
-    secrets  = Settings()
+        settings.TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
+        settings.TIMEAPI_UPD_HOUR = 8
+        settings.TIMEAPI_UPD_MIN  = 30
+
+  - sensor calibration:
     
-    # --- WLAN credentials
+        settings.TEMP_OFFSET = 0
+        settings.HUM_OFFSET  = 0
+
+  - active time (saves battery during the night):    
     
-    secrets.ssid      = 'your_ssid'
-    secrets.password  = 'your_password'
-    secrets.retry     = 1
-    secrets.debugflag = False
-    secrets.channel   = 6        # optional
-    secrets.timeout   = 10       # optional
-    
-    # --- update via time-api
-    
-    settings.TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
-    settings.TIMEAPI_UPD_HOUR = 8
-    settings.TIMEAPI_UPD_MIN  = 30
-    
-    # --- sensor settings
-    
-    settings.TEMP_OFFSET = 0
-    settings.HUM_OFFSET  = 0
-    
-    # --- active time
-    
-    #settings.ACTIVE_END_TIME   = "-1:00"           # always active
-    settings.ACTIVE_END_TIME    = "22:00"
-    #settings.ACTIVE_START_TIME = "07:00"           # start at time-point
-    settings.ACTIVE_START_TIME  = None              # start using a button
+        #settings.ACTIVE_END_TIME   = "-1:00"           # always active
+        settings.ACTIVE_END_TIME    = "22:00"
+        #settings.ACTIVE_START_TIME = "07:00"           # start at time-point
+        settings.ACTIVE_START_TIME  = None              # start using a button
+
+  - hardware setup for optional components:
+
+        settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
+        #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
+        settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
+        settings.wifi_module = "wifi_impl_esp01"        # implementing module
+        #settings.wifi_module = "wifi_impl_builtin"     # implementing module
 
 
-The first block defines the WLAN credentials. Setting the channel will
-speed-up connections, but this only works if your router uses a fixed
-channel.
+Hardware Hacking
+----------------
 
-The second block defines the URL of the time-api server and the time of
-the regular daily update.
+To support alternative hardware, you have to implement a few lines of
+python-code.
 
-The next block configures offsets for temperature and humidity. No
-sensor is perfect and these settings allow some simple calibration.  
+... (to be written)
 
-The final block defines the active time. If `ACTIVE_START_TIME` is `None`,
-the clock enters a deep-sleep with pin-alarm. Magtag and
-Badger2040 use the left pin (D15 or SW_A respectively) for this purpose.
-
-If you want the clock to be 100% active, set the end-time to a negative value.
