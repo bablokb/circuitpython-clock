@@ -47,8 +47,8 @@ from Clock import Clock
 
 # --- UI configuration   -----------------------------------------------------
 
-FONT_S   = bitmap_font.load_font(ui.font_s)
-FONT_L   = bitmap_font.load_font(ui.font_l)
+FONT_S   = bitmap_font.load_font("fonts/"+ui.font_s)
+FONT_L   = bitmap_font.load_font("fonts/"+ui.font_l)
 FG_COLOR = ui.fg_color
 BG_COLOR = ui.bg_color
 WDAY     = ui.day_names
