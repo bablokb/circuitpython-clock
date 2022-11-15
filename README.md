@@ -128,6 +128,10 @@ There a few things you should change:
         #settings.wifi_module = "wifi_impl_builtin"     # implementing module
 
 
+Other settings (like `ui.*`) are optional and let you tweak the appearance
+(especially useful on other hardware).
+
+
 Hardware Hacking
 ----------------
 
