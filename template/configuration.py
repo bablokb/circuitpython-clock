@@ -1,6 +1,8 @@
 # ----------------------------------------------------------------------------
 # template/configuration.py: runtime configuration settings template.
 #
+# Adapt to your needs (credentials, active-time, hardware, ui).
+#
 # Author: Bernhard Bablok
 # License: GPL3
 #
@@ -17,9 +19,12 @@ import adafruit_bus_device
 class Settings:
   pass
 
+# --- some containers ---
+
 settings = Settings()
 secrets  = Settings()
 pins     = Settings()
+ui       = Settings()
 
 # --- WLAN credentials ---
 
@@ -70,6 +75,24 @@ pins.PIN_TX    = board.TX                       # for ESP-01S
 pins.PIN_RX    = board.RX                       # for ESP-01S
 pins.PIN_RST   = board.INT                      # for ESP-01S
 
-pins.PIN_ALARM = None                           # no wakup pin
+pins.PIN_ALARM = None                           # no wakeup pin
 #pins.PIN_ALARM = board.SW_A                    # wakeup pin Badger2040
 #pins.PIN_ALARM = board.D15                     # wakeup pin Magtag
+
+# --- UI ---
+
+ui.bg_color  = 0xFFFFFF                         # white
+ui.fg_color  = 0x000000                         # black
+ui.font_s    = "DejaVuSans-Bold-24-min.bdf"     # small font
+ui.font_l    = "DejaVuSans-Bold-52-min.bdf"     # large font
+ui.day_names = {
+  0: 'Montag',      1: 'Dienstag',  2: 'Mittwoch',
+  3: 'Donnerstag',  4: 'Freitag',   5: 'Samstag',  6: 'Sonntag'
+  }
+ui.date_fmt  = "{0:02d}.{1:02d}.{2:02d}"        # dd.mm.yy
+
+#ui.day_names = {
+#  0: 'Monday',      1: 'Tuesday',   2: 'Wednesday',
+#  3: 'Thursday',    4: 'Friday',    5: 'Saturday',  6: 'Sunday'
+#  }
+#ui.date_fmt  = "{1:02d}/{0:02d}/{2:02d}"       # mm/dd/yy
