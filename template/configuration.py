@@ -57,6 +57,8 @@ settings.ACTIVE_START_TIME  = None              # start using a button
 
 i2c = board.I2C()
 settings.display = lambda: board.DISPLAY        # use builtin display
+settings.deep_sleep = True                      # use deep-sleep
+#settings.deep_sleep = False                    # for non-epaper displays
 
 #settings.rtc_ext = lambda: None                # no external RTC
 settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
