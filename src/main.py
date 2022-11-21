@@ -215,7 +215,10 @@ class App:
         pin_alarm = self._hw.pin_alarm()
         if pin_alarm:
           print("deep-sleep until button-press")
-          alarm.exit_and_deep_sleep_until_alarms(pin_alarm)
+          if settings.deep_sleep:
+            alarm.exit_and_deep_sleep_until_alarms(pin_alarm)
+          else:
+            alarm.light_sleep_until_alarms(pin_alarm)
         else:
           raise Exception("error: no alarm-button configured")
     else:
@@ -224,7 +227,10 @@ class App:
     alarm_time = time.mktime(now) + wait_time
     print("deep-sleep for %d seconds" % wait_time)
     wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
-    alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
+    if settings.deep_sleep:
+      alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
+    else:
+      alarm.light_sleep_until_alarms(wake_alarm)
 
 # --- main loop   ------------------------------------------------------------
 
