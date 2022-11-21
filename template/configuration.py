@@ -67,13 +67,22 @@ settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
 
 #settings.wifi_module = None                    # no WIFI
 settings.wifi_module = "wifi_impl_esp01"        # implementing module
+#settings.wifi_module = "wifi_impl_esp32spi"    # implementing module
 #settings.wifi_module = "wifi_impl_builtin"     # implementing module
 
 # --- pins ---
 
-pins.PIN_TX    = board.TX                       # for ESP-01S
-pins.PIN_RX    = board.RX                       # for ESP-01S
-pins.PIN_RST   = board.INT                      # for ESP-01S
+#pins.PIN_TX    = board.TX                       # for ESP-01S
+#pins.PIN_RX    = board.RX                       # for ESP-01S
+#pins.PIN_RST   = board.INT                      # for ESP-01S
+
+#pins.PIN_ESP_BUSY  = board.ESP_BUSY             # for ESP32spi
+#pins.PIN_ESP_GPIO0 = board.ESP_GPIO0            # for ESP32spi
+#pins.PIN_ESP_RESET = board.ESP_RESET            # for ESP32spi
+#pins.PIN_ESP_CS    = board.ESP_CS               # for ESP32spi
+#pins.PIN_SCK       = board.SCK                  # for ESP32spi
+#pins.PIN_MOSI      = board.MOSI                 # for ESP32spi
+#pins.PIN_MISO      = board.MISO                 # for ESP32spi
 
 pins.PIN_ALARM = None                           # no wakeup pin
 #pins.PIN_ALARM = board.SW_A                    # wakeup pin Badger2040
