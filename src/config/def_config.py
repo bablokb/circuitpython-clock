@@ -24,6 +24,9 @@ class HWConfig:
 
   def pin_alarm(self):
     """ return pre-configured pin-alarm """
-    return alarm.pin.PinAlarm(pins.PIN_ALARM,value=False,edge=True,pull=True)
+    if pins.PIN_ALARM:
+      return alarm.pin.PinAlarm(pins.PIN_ALARM,value=False,edge=True,pull=True)
+    else:
+      return None
 
 config = HWConfig()
