@@ -33,7 +33,6 @@ except:
   config_file = "/config/def_config"
   hw_impl = builtins.__import__(config_file,None,None,["config"],0)
   print("using default implementation")
-  raise
 
 # import settings
 from configuration import settings, ui
@@ -196,7 +195,8 @@ class App:
       self.update_env_sensor()
     self.update_bat_level()
     self._display.show(self._group)
-    time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
+    if hasattr(self._display,"time_to_refresh"):
+      time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
     self._display.refresh()
 
   # --- send system to deep-sleep   ------------------------------------------
@@ -212,8 +212,12 @@ class App:
       if settings.ACTIVE_START_TIME:
         wait_time = self._get_wait_time()
       else:
-        print("deep-sleep until button-press")
-        alarm.exit_and_deep_sleep_until_alarms(self._hw.pin_alarm())
+        pin_alarm = self._hw.pin_alarm()
+        if pin_alarm:
+          print("deep-sleep until button-press")
+          alarm.exit_and_deep_sleep_until_alarms(pin_alarm)
+        else:
+          raise Exception("error: no alarm-button configured")
     else:
       wait_time  = 60 - now.tm_sec
 
