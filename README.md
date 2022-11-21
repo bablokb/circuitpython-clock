@@ -1,8 +1,8 @@
 A Clock for E-Ink Displays
 ==========================
 
-**Note: this is work-in-progress. Features and configuration will change in
-the future.**
+![](badger2040-clock.jpg)
+
 
 This project implements the software for an e-ink clock using CircuitPython.
 The clock displays the current time and is updated every minute. It also
@@ -17,6 +17,7 @@ The software is optimized to minimize battery usage. E.g. you can define
 an "active" period during the day when updates take place, otherwise the
 clock is left in deep-sleep.
 
+**Note: this is work-in-progress.**
 
 Hardware
 --------
