@@ -134,7 +134,10 @@ class App:
       self._hum  = self._create_text('SE',"33%")
 
     # label for battery-value
-    self._bat  = self._create_text('S',"7.7V")
+    if self._hw.bat_level():
+      self._bat  = self._create_text('S',"7.7V")
+    else:
+      self._bat = None
 
   # --- query wait-time for inactive period   --------------------------------
 
@@ -193,7 +196,8 @@ class App:
     self.update_datetime()
     if self._sensor:
       self.update_env_sensor()
-    self.update_bat_level()
+    if self._bat:
+      self.update_bat_level()
     self._display.show(self._group)
     if hasattr(self._display,"time_to_refresh"):
       time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
