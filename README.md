@@ -17,8 +17,6 @@ The software is optimized to minimize battery usage. E.g. you can define
 an "active" period during the day when updates take place, otherwise the
 clock is left in deep-sleep.
 
-**Note: this is work-in-progress.**
-
 Hardware
 --------
 
@@ -32,7 +30,7 @@ You need the following components:
 
 Out of the box the software supports:
 
-  - MCU+display: Badger2040 and Magtag
+  - MCU+display: Badger2040, Magtag, Pico-W + "Pico Inky Pack" (from Pimoroni)
   - RTC: DS3231 and PCF8523
   - AHT20 (for temperature and humidity)
 
@@ -136,8 +134,15 @@ Other settings (like `ui.*`) are optional and let you tweak the appearance
 Hardware Hacking
 ----------------
 
-To support alternative hardware, you have to implement a few lines of
-python-code.
+To support alternative hardware, you might have to implement a few lines of
+python-code. You need a suitable `configuration.py` and maybe a
+hardware-config-file.
 
-... (to be written)
+The `configuration.py` not only contains settings, it also creates the
+Python-objects wrapping the hardware. The `template`-directory contains
+a few sample configuration files.
 
+For battery-level and pin-alarm the necessary code is in `src/config` in
+a file named `<board-id>.py` (with "-" replaced by "_" in the board-id).
+If you don't care about battery-level and your wakeup-pin is pulled low,
+the default (in `src/config/def_config.py`) will be sufficient.
