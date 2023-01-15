@@ -67,6 +67,8 @@ z_bb     = h_bb+x_bb-2*w2;         // cutout height
 
 z_body = 30;                       // depth/height of the body
 
+x_bcon     = w4;
+y_bcon     = 2*w4;
 z_bcon     = z_body/3;             // base-connector
 z_bcon_off = z_body/3;
 
