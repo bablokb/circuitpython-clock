@@ -35,8 +35,8 @@ module corpus() {
 // --- fase   ----------------------------------------------------------------
 
 module fase() {
-  translate([0,y_conn/2,0])
-    prismoid(size1=[x_bcon,y_bcon],size2=[x_conn,0],shift=[0,-y_conn/2],h=y_conn,
+  translate([0,y_bcon/2,0])
+    prismoid(size1=[x_bcon-gap,y_bcon],size2=[x_bcon-gap,0],shift=[0,-y_bcon/2],h=y_bcon,
              spin=180,orient=FRONT+FORWARD,anchor=BOTTOM+FRONT);
 }
 
