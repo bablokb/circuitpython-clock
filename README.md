@@ -86,8 +86,8 @@ Configuration
 
 For configuration, you need the python-file `configuration.py` in the
 root-directory of your device. You can find a template in
-`template/configuration.py'. Copy this file to your device and adapt it to
-your needs.
+`template/configuration.py'. *Copy this file to your device and adapt it to
+your needs.*
 
 There a few things you should change:
 
@@ -113,10 +113,10 @@ There a few things you should change:
 
   - active time (saves battery during the night):    
     
-        #settings.ACTIVE_END_TIME   = "-1:00"           # always active
-        settings.ACTIVE_END_TIME    = "22:00"
         #settings.ACTIVE_START_TIME = "07:00"           # start at time-point
         settings.ACTIVE_START_TIME  = None              # start using a button
+        #settings.ACTIVE_END_TIME   = "-1:00"           # always active
+        settings.ACTIVE_END_TIME    = "22:00"
 
   - hardware setup for optional components:
 
@@ -128,7 +128,7 @@ There a few things you should change:
 
 
 Other settings (like `ui.*`) are optional and let you tweak the appearance
-(especially useful on other hardware).
+and behavior (especially useful on other hardware).
 
 
 Hardware Hacking
