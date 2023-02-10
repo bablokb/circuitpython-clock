@@ -13,15 +13,6 @@
 include <dimensions.scad>
 include <BOSL2/std.scad>
 
-x_pcb = 23;
-y_pcb = 35;
-z_pcb =  2.0;                                  // including some SMD-parts
-
-x_holder = x_pcb + 2*w2 + 2*gap;
-y_holder = y_pcb + 2*w2 + 2*gap;
-b_holder = 1.8;                                // base thickness
-z_holder = b_holder + z_pcb;
-
 prism_x = 5;                                 // prism size
 prism_z = 0.6;
 
