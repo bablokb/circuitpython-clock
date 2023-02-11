@@ -18,18 +18,16 @@ y_corpus_top   = y_corpus_bot*2/3;
 y_corpus_shift = (y_corpus_bot-y_corpus_top)/2;
 h_corpus       = z_body + 20;
 
+
+t_corpus = y_corpus_bot-2*w4 - (y_corpus_top-2*w4);
+alpha = atan(t_corpus/h_corpus);                       // angle of corpus
+
 // --- the corpus   ------------------------------------------------------------
 
 module corpus() {
   rect_tube(size1=[x1_panel,y_corpus_bot],size2=[x1_panel,y_corpus_top],
                    h=h_corpus,wall=w4,shift=[0,-y_corpus_shift],
                    rounding=r_panel,irounding=r_panel,anchor=BOTTOM+CENTER);
-  // workaround: prusa-slice does not slice the first layer correctly, so add some supprt
-  cuboid([x1_panel,y_corpus_bot/3,0.2],
-          chamfer=y_corpus_bot/6,edges="Z",anchor=BOTTOM+CENTER);
-  cuboid([x1_panel/10,y_corpus_bot,0.2],
-          chamfer=x1_panel/20,edges="Z",anchor=BOTTOM+CENTER);
-
 }
 
 // --- fase   ----------------------------------------------------------------
@@ -61,7 +59,8 @@ module cutouts() {
   // cable hole
   translate([+1.5*x_cable,-(y_corpus_bot/2-w4/2)-fuzz,(z_body-z_cable)/2])
        cuboid([x_cable,w4+2*fuzz,z_cable],anchor=BOTTOM+CENTER);
-  
+  translate([0,y_corpus_bot/2-w4-(h_corpus-y_holder)*t_corpus/h_corpus,h_corpus-y_holder])
+                 xrot(alpha) cuboid([x_holder+2*gap,w4,y_holder+4*gap],anchor=BOTTOM+CENTER);
 }
 
 // --- final model   ---------------------------------------------------------
