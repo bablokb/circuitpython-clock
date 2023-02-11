@@ -40,6 +40,13 @@ class Clock:
       print("using nvram for status")
       self._mem = microcontroller.nvm
 
+    # clear any alarms
+    if hasattr(settings,"rtc_ext_wakeup"):
+      if hasattr(self._rtc_ext,"alarm1"):
+        self._rtc_ext.alarm1_status = False
+      elif hasattr(self._rtc_ext,"alarm"):
+        self._rtc_ext.alarm_status = False
+
   # --- initialze wifi, connect to AP and to remote-port   -------------------
 
   def _connect(self):
@@ -122,6 +129,29 @@ class Clock:
 
     if self._wifi:
       self._wifi.deep_sleep()
+
+  # --- set alarm-time   ----------------------------------------------------
+
+  def set_alarm(self,alarm_time):
+    """ set alarm-time. DS3231 has alarm1, while PCF85x3 has alarm """
+
+    if self._rtc_ext:
+      if hasattr(self._rtc_ext,"clockout_enabled"):
+        self._rtc_ext.clockout_enabled = False
+      elif hasattr(self._rtc_ext,"clockout_frequency"):
+        self._rtc_ext.clockout_frequency = 0b111
+      if hasattr(self._rtc_ext,"alarm1"):
+        self._rtc_ext.alarm1  = (time.localtime(alarm_time),"daily")
+        self._rtc_ext.alarm1_interrupt = True
+        return True
+      elif hasattr(self._rtc_ext,"alarm"):
+        self._rtc_ext.alarm  = (time.localtime(alarm_time),"daily")
+        self._rtc_ext.alarm_interrupt = True
+        return True
+      else:
+        return False
+    else:
+      return False
 
   # --- return local time   -------------------------------------------------
 

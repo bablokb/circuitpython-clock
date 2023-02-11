@@ -63,6 +63,7 @@ settings.deep_sleep = True                      # use deep-sleep
 #settings.rtc_ext = lambda: None                # no external RTC
 settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
 #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
+#settings.rtc_ext_wakeup = 0|1                  # active low|high rtc-wakup
 
 #settings.sensor = lambda: None                 # no temp/humidity sensor
 settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
@@ -89,6 +90,7 @@ settings.wifi_module = "wifi_impl_esp01"        # implementing module
 pins.PIN_ALARM = None                           # no wakeup pin
 #pins.PIN_ALARM = board.SW_A                    # wakeup pin Badger2040
 #pins.PIN_ALARM = board.D15                     # wakeup pin Magtag
+pins.RTC_ALARM = None                           # external wakup pin
 
 # --- UI ---
 

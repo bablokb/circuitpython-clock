@@ -35,7 +35,7 @@ except:
   print("using default implementation")
 
 # import settings
-from configuration import settings, ui
+from configuration import settings, ui, pins
 
 # display-support
 import displayio
@@ -210,6 +210,8 @@ class App:
 
     now = time.localtime()
     self._clock.deep_sleep()
+
+    # check for long sleep during inactive period (e.g. at night)
     if (now.tm_hour == int(settings.ACTIVE_END_TIME[0:2]) and
         now.tm_min  == int(settings.ACTIVE_END_TIME[3:5])):
       print("end of active time, taking a long nap")
@@ -223,14 +225,28 @@ class App:
             alarm.exit_and_deep_sleep_until_alarms(pin_alarm)
           else:
             alarm.light_sleep_until_alarms(pin_alarm)
+            return
         else:
           raise Exception("error: no alarm-button configured")
     else:
+      # wake up at next full minute
       wait_time  = 60 - now.tm_sec
 
     alarm_time = time.mktime(now) + wait_time
     print("deep-sleep for %d seconds" % wait_time)
-    wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
+
+    # check if we just sleep or use an external rtc for wakeup.
+    # On a pico, the pin-alarm is fare more efficient than the timer-alarm,
+    # so this saves considerable power
+    if (hasattr(settings,"rtc_ext_wakeup") and pins.RTC_ALARM and
+        self._clock.set_alarm(alarm_time)):
+      print("using PinAlarm from external RTC")
+      wake_alarm = alarm.pin.PinAlarm(pins.RTC_ALARM,
+                                      value=settings.rtc_ext_wakeup,
+                                      edge=True,pull=False)
+    else:
+      print("using TimeAlarm from internal RTC")
+      wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
     if settings.deep_sleep:
       alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
     else:
