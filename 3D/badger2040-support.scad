@@ -42,13 +42,17 @@ module fase() {
 
 module connectors() {
   translate([-x1_panel/2+x1_panel/8,
-             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off]) {
+             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off+y_bcon]) {
        cuboid([x_bcon-gap,y_bcon,z_bcon-y_bcon],anchor=BOTTOM+CENTER);
+       translate([0,-y_bcon/4,z_bcon-y_bcon])
+              cuboid([x_bcon-gap,y_bcon/2,y_bcon/2],anchor=BOTTOM+CENTER);
        fase();
   }
   translate([+x1_panel/2-x1_panel/8,
-             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off]) {
+             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off+y_bcon]) {
        cuboid([x_bcon-gap,y_bcon,z_bcon-y_bcon],anchor=BOTTOM+CENTER);
+       translate([0,-y_bcon/4,z_bcon-y_bcon])
+              cuboid([x_bcon-gap,y_bcon/2,y_bcon/2],anchor=BOTTOM+CENTER);
        fase();
   }
 }
