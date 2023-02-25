@@ -236,7 +236,7 @@ class App:
     print("deep-sleep for %d seconds" % wait_time)
 
     # check if we just sleep or use an external rtc for wakeup.
-    # On a pico, the pin-alarm is fare more efficient than the timer-alarm,
+    # On a pico, the pin-alarm is far more efficient than the timer-alarm,
     # so this saves considerable power
     if (hasattr(settings,"rtc_ext_wakeup") and pins.RTC_ALARM and
         self._clock.set_alarm(alarm_time)):
