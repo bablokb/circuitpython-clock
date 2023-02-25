@@ -36,6 +36,9 @@ class Clock:
       if alarm.sleep_memory:
         print("using sleep-memory for status")
         self._mem = alarm.sleep_memory
+      else:
+        print("using nvram for status")
+        self._mem = microcontroller.nvm
     except:
       print("using nvram for status")
       self._mem = microcontroller.nvm
@@ -46,6 +49,7 @@ class Clock:
         self._rtc_ext.alarm1_status = False
       elif hasattr(self._rtc_ext,"alarm"):
         self._rtc_ext.alarm_status = False
+        print("clearing alarm")
 
   # --- initialze wifi, connect to AP and to remote-port   -------------------
 
