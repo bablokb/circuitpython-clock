@@ -20,7 +20,13 @@ class HWConfig:
 
   def bat_level(self):
     """ return battery level """
-    return 0.0
+    if hasattr(board,"VOLTAGE_MONITOR"):
+      adc = AnalogIn(board.VOLTAGE_MONITOR)
+      level = adc.value *  3 * 3.3 / 65535
+      adc.deinit()
+      return level
+    else:
+      return 0.0
 
   def pin_alarm(self):
     """ return pre-configured pin-alarm """
