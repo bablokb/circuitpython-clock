@@ -243,7 +243,7 @@ class App:
       print("using PinAlarm from external RTC")
       wake_alarm = alarm.pin.PinAlarm(pins.RTC_ALARM,
                                       value=settings.rtc_ext_wakeup,
-                                      edge=True,pull=False)
+                                      edge=True,pull=True)
     else:
       print("using TimeAlarm from internal RTC")
       wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
