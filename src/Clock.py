@@ -171,7 +171,6 @@ class Clock:
             (self._rtc_ext.datetime.tm_hour,self._rtc_ext.datetime.tm_min,
              self._rtc_ext.datetime.tm_mday,self._rtc_ext.datetime.tm_mon,
              self._rtc_ext.datetime.tm_year))
-      print("lost_power: %r" % self._rtc_ext.lost_power)
     else:
       print("rtc_ext: not available")
     print("RTC-state:  %d" % self._mem[MEM_RTC_STATE])
@@ -179,8 +178,7 @@ class Clock:
 
     do_update = (
       force_upd or                             # explicit request
-      self._rtc_ext and (
-        self._rtc_ext.lost_power or            # power loss detected by external RTC
+      (self._rtc_ext and
         self._mem[MEM_RTC_STATE] != 1 ) or     # external RTC not valid
       (not self._rtc_ext and not               # no external RTC, so
        self._check_rtc(self._rtc_int)) or      #   check internal rtc
