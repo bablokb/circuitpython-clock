@@ -65,6 +65,12 @@ settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
 #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
 #settings.rtc_ext_wakeup = 0|1                  # active low|high rtc-wakup
 
+# example power_off command for Badger2040W (don't forget to import time)
+#def power_off():
+#  time.sleep(3)                # give time for the display to refresh
+#  board.ENABLE_DIO.value = 0   # turn off power
+#settings.power_off = power_off
+
 #settings.sensor = lambda: None                 # no temp/humidity sensor
 settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
 

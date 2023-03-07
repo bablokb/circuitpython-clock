@@ -9,13 +9,14 @@ The clock displays the current time and is updated every minute. It also
 supports the display of temperature and humidity.
 
 Update of date and time uses an attached ESP-01S (unless you use a board
-with integrated WLAN like the Magtag or a PicoW). Update occurs at
+with integrated WLAN like the Badger2040W, Magtag or a PicoW). Update occurs at
 system startup and once a day. An external RTC is used to keep date/time
 in case this update fails.
 
 The software is optimized to minimize battery usage. E.g. you can define
 an "active" period during the day when updates take place, otherwise the
 clock is left in deep-sleep.
+
 
 Hardware
 --------
@@ -31,6 +32,7 @@ You need the following components:
 Out of the box the software supports:
 
   - MCU+display: Badger2040, Magtag, Pico-W + "Pico Inky Pack" (from Pimoroni)
+  - MCU+display+RTC: Badger2040W (from Pimoroni)
   - RTC: DS3231 and PCF8523
   - AHT20 (for temperature and humidity)
 
@@ -136,13 +138,15 @@ Hardware Hacking
 
 To support alternative hardware, you might have to implement a few lines of
 python-code. You need a suitable `configuration.py` and maybe a
-hardware-config-file.
+board-config-file.
 
 The `configuration.py` not only contains settings, it also creates the
 Python-objects wrapping the hardware. The `template`-directory contains
 a few sample configuration files.
 
-For battery-level and pin-alarm the necessary code is in `src/config` in
-a file named `<board-id>.py` (with "-" replaced by "_" in the board-id).
-If you don't care about battery-level and your wakeup-pin is pulled low,
-the default (in `src/config/def_config.py`) will be sufficient.
+Board-specific functions (like battery-level or pin-alarms) are in a
+file within `src/config`. The file has the name `<board-id>.py`
+(with "-" replaced by "_" in the board-id).
+
+If no board-specific file is available, the system uses
+`src/config/def_config.py`, which might already be sufficient.
