@@ -248,6 +248,8 @@ class App:
       print("using TimeAlarm from internal RTC")
       wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
     if settings.deep_sleep:
+      if hasattr(settings,"power_off"):
+        settings.power_off()             # this will only work when on battery
       alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
     else:
       alarm.light_sleep_until_alarms(wake_alarm)
