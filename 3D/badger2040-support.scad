@@ -30,51 +30,30 @@ module corpus() {
                    rounding=r_panel,irounding=r_panel,anchor=BOTTOM+CENTER);
 }
 
-// --- fase   ----------------------------------------------------------------
-
-module fase() {
-  translate([0,y_bcon/2,0])
-    prismoid(size1=[x_bcon-gap,y_bcon],size2=[x_bcon-gap,0],shift=[0,-y_bcon/2],h=y_bcon,
-             spin=180,orient=FRONT+FORWARD,anchor=BOTTOM+FRONT);
-}
-
-// --- base-connectors   -----------------------------------------------------
-
-module connectors() {
-  translate([-x1_panel/2+x1_panel/8,
-             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off+y_bcon]) {
-       cuboid([x_bcon-gap,y_bcon,z_bcon-y_bcon],anchor=BOTTOM+CENTER);
-       translate([0,-y_bcon/4,z_bcon-y_bcon])
-              cuboid([x_bcon-gap,y_bcon/2,y_bcon/2],anchor=BOTTOM+CENTER);
-       fase();
-  }
-  translate([+x1_panel/2-x1_panel/8,
-             -y_corpus_bot/2-y_bcon/2+fuzz,z_bcon_off+y_bcon]) {
-       cuboid([x_bcon-gap,y_bcon,z_bcon-y_bcon],anchor=BOTTOM+CENTER);
-       translate([0,-y_bcon/4,z_bcon-y_bcon])
-              cuboid([x_bcon-gap,y_bcon/2,y_bcon/2],anchor=BOTTOM+CENTER);
-       fase();
-  }
-}
-
 // --- cutouts   -------------------------------------------------------------
 
 module cutouts() {
+  y_off_corpus = -(y_corpus_bot/2-w4/2)-fuzz;
   // cable hole
-  translate([+1.5*x_cable,-(y_corpus_bot/2-w4/2)-fuzz,(z_body-z_cable)/2])
+  translate([+1.5*x_cable,y_off_corpus,(z_body-z_cable)/2])
        cuboid([x_cable,w4+2*fuzz,z_cable],anchor=BOTTOM+CENTER);
+
+  // lipo-pro
   translate([0,y_corpus_bot/2-w4-(h_corpus-y_holder)*t_corpus/h_corpus,h_corpus-y_holder])
                  xrot(alpha) cuboid([x_holder+2*gap,w4,y_holder+4*gap],anchor=BOTTOM+CENTER);
+
+  // base-connector
+  translate([-x1_panel/2+x1_panel/8,y_off_corpus,z_bcon_off])
+       cuboid([x_bcon+gap/2,y_bcon+2*fuzz,z_bcon],anchor=BOTTOM+CENTER);
+  translate([+x1_panel/2-x1_panel/8,y_off_corpus,z_bcon_off])
+       cuboid([x_bcon+gap/2,y_bcon+2*fuzz,z_bcon],anchor=BOTTOM+CENTER);
 }
 
 // --- final model   ---------------------------------------------------------
 
 module support() {
   difference() {
-    union() {
-      corpus();
-      connectors();
-    }
+    corpus();
     cutouts();
   }
 }
