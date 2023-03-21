@@ -75,6 +75,8 @@ z_bcon_off = z_body/3;
 x_cable = 10;                      // cable-hole
 z_cable = 10;
 
+// lipo-amigo pro dimensions   ----------------------------------------------
+
 x_pcb = 23;                        // x-dim lipo-amigo pro
 y_pcb = 35;                        // y-dim lipo-amigo pro
 z_pcb =  2.0;                      // including some SMD-parts
@@ -83,3 +85,10 @@ x_holder = x_pcb + 2*w2 + 2*gap;   // holder: pcb + walls
 y_holder = y_pcb + 2*w2 + 2*gap;
 b_holder = 1.8;                    // base thickness
 z_holder = b_holder + z_pcb;
+
+// dimensions for support-part   ---------------------------------------------
+
+y_support_bot   = y1_panel/3;
+y_support_top   = y_support_bot*2/3;
+y_support_shift = (y_support_bot-y_support_top)/2;
+h_support       = z_body + 20;
