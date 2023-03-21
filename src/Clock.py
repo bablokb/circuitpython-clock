@@ -94,8 +94,10 @@ class Clock:
       return False
 
     ts = rtc.datetime
-    return (ts.tm_year > 2021 and ts.tm_mon < 13 and ts.tm_mday < 32 and
-            ts.tm_hour < 25   and ts.tm_min < 60 and ts.tm_sec   < 60)
+    return (ts.tm_year > 2022 and ts.tm_year < 2099 and
+            ts.tm_mon > 0 and ts.tm_mon < 13 and
+            ts.tm_mday > 0 and ts.tm_mday < 32 and
+            ts.tm_hour < 25 and ts.tm_min < 60 and ts.tm_sec < 60)
 
   # --- set state of external RTC   -----------------------------------------
 
