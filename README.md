@@ -48,6 +48,7 @@ uses UART (RX, TX), a reset-GPIO, 3V3 and GND.
 The Magtag only needs the RTC and the sensor. The Badger2040 has suitable
 pads on the back for UART, 3V3 and GND. Use the INT-pad for the ESP-01S reset.
 
+The Badger2040W only needs the sensor.
 
 Installation
 ------------
@@ -62,11 +63,12 @@ Installation
        - adafruit_bus_device
        - adafruit_display_shapes
        - adafruit_display_text
-       - adafruit_ds3231
+       - (adafruit_ds3231)
        - adafruit_espatcontrol
-       - adafruit_pcf8523
+       - (adafruit_pcf8523)
        - adafruit_register
        - adafruit_requests
+       - (circuitpython_pcf85063a)
 
      The preferred way to do this is to use `circup` (note that the device
      must be mounted):  
@@ -74,6 +76,8 @@ Installation
          sudo apt-get -y install pip3
          sudo pip3 install circup
          circup --path /mountpoint/of/device install -r requirements.txt
+
+     You can save some space if you delete the unneeded rtc-drivers.
 
   2. Clone the repository
 
@@ -89,7 +93,8 @@ Configuration
 For configuration, you need the python-file `configuration.py` in the
 root-directory of your device. You can find a template in
 `template/configuration.py'. *Copy this file to your device and adapt it to
-your needs.*
+your needs.* For some specifc hardware, you find special configuration
+templates in the directory.
 
 There a few things you should change:
 
