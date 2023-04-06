@@ -24,12 +24,14 @@ rim = w4 + gap/2 + w2 + gap;       // outer walls, gap/2, inner walls, gap
 
 x1_panel = 85.6 + 2*rim;           // outer dimension
 x2_panel = 81.5 + rim;             // dimension full z-height
+x2_panelw= 81.5 + w2 + gap;        // dimension full z-height (BadgerW)
 x3_panel = 66.9;                   // dimension inner cutout
 x3_panel_off = 9.35 + rim;         //    offset
 
 y1_panel = 48.7 + 2*rim;           // outer dimension
 y2_panel = 39.3;                   // dimension full z-height
 y3_panel = 29.06;                  // dimension inner cutout
+y_panel_cutout = 20;               // dimension cutout display-connector
 
 z2_panel = 1.6;                    // panel depth above pcb
 z3_panel = 0.4;                    // panel depth above display
@@ -57,6 +59,9 @@ z_wall = 10.2;
 y_usb     = 13.00;                 // y-dim usb-c (for plugs with larger shields)
 y_usb_off = 10.15 + rim;           // offset from bottom
 z_usb     = 8.5;
+
+y_musb     = 11;                    // y-dim micro-usb
+y_musb_off = 17.1 + rim;            // offset from bottom
 
 x_bb     = 15.5;                   // x-dim back buttons (min: 12.2)
 y_bb     =  3.2 + rim;             // badger-boarder to inner side of buttons
