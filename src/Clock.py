@@ -13,8 +13,8 @@
 #
 # ----------------------------------------------------------------------------
 
-MEM_RTC_STATE = 0
-MEM_API_STATE = 1
+RTC_STATE     = 0b01
+TIMEAPI_STATE = 0b10
 
 import time
 import alarm
@@ -32,16 +32,10 @@ class Clock:
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
     self._wifi    = None
-    try:
-      if alarm.sleep_memory:
-        print("using sleep-memory for status")
-        self._mem = alarm.sleep_memory
-      else:
-        print("using nvram for status")
-        self._mem = microcontroller.nvm
-    except:
-      print("using nvram for status")
-      self._mem = microcontroller.nvm
+    self._status  = self._get_status()
+    if self._status > 0b11:
+      self._status = 0
+    print(f"status: 0b{self._status:02b}")
 
     # clear any alarms
     if hasattr(settings,"rtc_ext_wakeup"):
@@ -51,6 +45,54 @@ class Clock:
       elif hasattr(self._rtc_ext,"alarm"):
         self._rtc_ext.alarm_status = False
         print("clearing alarm")
+
+  # --- get status   ---------------------------------------------------------
+
+  def _get_status(self,flag=None):
+    """ initialize status or return provided status-flag """
+    if not flag is None:
+      return self._status & flag
+    else:
+      if self._rtc_ext and hasattr(self._rtc_ext,"ram_byte"):
+        print("using ram-byte for status")
+        return self._rtc_ext.ram_byte
+      else:
+        try:
+          if alarm.sleep_memory:
+            print("using sleep-memory for status")
+            return alarm.sleep_memory[0]
+          else:
+            print("using nvram for status")
+            return microcontroller.nvm[0]
+        except:
+          print("using nvram for status")
+          return microcontroller.nvm[0]
+
+  # --- set status   ---------------------------------------------------------
+
+  def _set_status(self,flag,value):
+    """ update status """
+    if value:
+      self._status |= (1 << (flag-1))
+    else:
+      self._status &= ~(1 << (flag-1))
+
+  # --- save status   --------------------------------------------------------
+
+  def _save_status(self):
+    """ save status """
+
+    print(f"status: 0b{self._status:02b}")
+    if self._rtc_ext and hasattr(self._rtc_ext,"ram_byte"):
+      self._rtc_ext.ram_byte = self._status
+    else:
+      try:
+        if alarm.sleep_memory:
+          alarm.sleep_memory[0] = self._status
+        else:
+          microcontroller.nvm[0] = self._status
+      except:
+        microcontroller.nvm[0] = self._status
 
   # --- initialze wifi, connect to AP and to remote-port   -------------------
 
@@ -109,19 +151,18 @@ class Clock:
       self._rtc_int.datetime = ts
       if self._rtc_ext:
         self._rtc_ext.datetime = ts
-        if self._mem[MEM_RTC_STATE] != 1:
-          self._mem[MEM_RTC_STATE] = 1
+        self._set_status(RTC_STATE,1)
     else:
-      state = self._mem[MEM_RTC_STATE] == 1 and self._check_rtc(self._rtc_ext)
+      state = self._get_status(RTC_STATE) and self._check_rtc(self._rtc_ext)
       if state:
         # external RTC claims to be valid and passes the heuristic check
         print("using external RTC")
         ext_ts = self._rtc_ext.datetime
         self._rtc_int.datetime = ext_ts
-      elif self._mem[MEM_RTC_STATE] == 1:
+      elif self._get_status(RTC_STATE):
         # invalid value of external RTC
         print("using internal RTC, clearing ext RTC-state")
-        self._mem[MEM_RTC_STATE] = 0
+        self._set_status(RTC_STATE,0)
       elif self._rtc_ext:
         print("using internal RTC, setting external RTC from internal")
         int_ts = self._rtc_int.datetime          # a valid ext. RTC will allow
@@ -134,6 +175,7 @@ class Clock:
   def deep_sleep(self):
     """ send wifi to deep-sleep """
 
+    self._save_status()
     if self._wifi:
       self._wifi.deep_sleep()
 
@@ -176,16 +218,16 @@ class Clock:
              self._rtc_ext.datetime.tm_year))
     else:
       print("rtc_ext: not available")
-    print("RTC-state:  %d" % self._mem[MEM_RTC_STATE])
-    print("API-state:  %d" % self._mem[MEM_API_STATE])
+    print(f"RTC-state:  0b{self._get_status(RTC_STATE):02b}")
+    print(f"API-state:  0b{self._get_status(TIMEAPI_STATE):02b}")
 
     do_update = (
       force_upd or                             # explicit request
-      (self._rtc_ext and
-        self._mem[MEM_RTC_STATE] != 1 ) or     # external RTC not valid
+      (self._rtc_ext and not
+        self._get_status(RTC_STATE)) or        # external RTC not valid
       (not self._rtc_ext and not               # no external RTC, so
        self._check_rtc(self._rtc_int)) or      #   check internal rtc
-      self._mem[MEM_API_STATE] != 1            # last API-call not valid
+       not self._get_status(TIMEAPI_STATE)     # last API-call not valid
     )
     do_update_daily = (
       self._rtc_int.datetime.tm_hour == settings.TIMEAPI_UPD_HOUR and
@@ -199,15 +241,14 @@ class Clock:
         print("fetching time from %s" % settings.TIMEAPI_URL)
         ts = self._get_remotetime()
         self._set_rtc_state(ts)
-        if self._mem[MEM_API_STATE] != 1:
-          self._mem[MEM_API_STATE] = 1
+        self._set_status(TIMEAPI_STATE,1)
       except Exception as ex:
         # no internet-connection or time-api fails
         print("exception fetching time: %r" % ex)
         self._set_rtc_state(None)
-        if self._mem[MEM_API_STATE] == 1 and do_update:
+        if self._get_status(TIMEAPI_STATE) and do_update:
           # a failing daily update alone should not trigger new updates
-          self._mem[MEM_API_STATE] = 0
+          self._set_status(TIMEAPI_STATE,0)
     else:
       self._set_rtc_state(None)
     return time.localtime()
