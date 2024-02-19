@@ -31,11 +31,25 @@ class WifiImpl:
   # --- initialze and connect to AP and to remote-port   ---------------------
 
   def connect(self):
-    """ initialize ESP32 """
+    """ connect to AP """
 
     import wifi
     print("connecting to %s" % self._secrets.ssid)
     retries = self._secrets.retry
+
+    # check for static client hostname/address
+    if hasattr(self._secrets,'hostname'):
+      import ipaddress
+      addr  = ipaddress.ip_address(self._secrets.address)
+      mask  = ipaddress.ip_address(self._secrets.netmask)
+      gatew = ipaddress.ip_address(self._secrets.gateway)
+      dns   = ipaddress.ip_address(self._secrets.dns)
+      wifi.radio.hostname = self._secrets.hostname
+      wifi.radio.set_ipv4_address(ipv4 = addr,
+                                  netmask = mask,
+                                  gateway = gatew,
+                                  ipv4_dns = dns)
+
     while True:
       try:
         wifi.radio.connect(self._secrets.ssid,
