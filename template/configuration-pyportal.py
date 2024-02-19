@@ -37,6 +37,13 @@ secrets.debugflag = False
 secrets.channel   = 6        # optional
 secrets.timeout   = 10       # optional
 
+# optional for static IP configuration (for faster connects)
+#secrets.hostname  = 'cpclock'
+#secrets.address   = '192.168.100.42'
+#secrets.netmask   = '255.255.255.255'
+#secrets.gateway   = '192.168.100.1'
+#secrets.dns       = '192.168.100.1'
+
 # --- update via time-api ---
 
 settings.TIMEAPI_URL      = "http://worldtimeapi.org/api/ip"
