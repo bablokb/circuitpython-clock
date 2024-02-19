@@ -127,7 +127,7 @@ There a few things you should change:
 
   - hardware setup for optional components:
 
-        settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
+        settings.rtc_ext = lambda: PCF8523(i2c)
         #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
         settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
         settings.wifi_module = "wifi_impl_esp01"        # implementing module

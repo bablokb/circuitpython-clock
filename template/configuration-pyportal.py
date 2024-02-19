@@ -13,7 +13,7 @@
 # ----------------------------------------------------------------------------
 
 import board
-import adafruit_pcf8523        # PCF8523 support
+from adafruit_pcf8523.pcf8523 import PCF8523
 #import adafruit_ds3231        # DS3231 support
 import adafruit_ahtx0          # AHT20
 import adafruit_bus_device
@@ -62,7 +62,7 @@ settings.display = lambda: board.DISPLAY        # use builtin display
 settings.deep_sleep = False
 
 settings.rtc_ext = lambda: None                # no external RTC
-#settings.rtc_ext = lambda: adafruit_pcf8523.PCF8523(i2c)
+#settings.rtc_ext = lambda: PCF8523(i2c)
 #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
 
 settings.sensor = lambda: None                 # no temp/humidity sensor
