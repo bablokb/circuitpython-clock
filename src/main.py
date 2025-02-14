@@ -198,7 +198,10 @@ class App:
       self.update_env_sensor()
     if self._bat:
       self.update_bat_level()
-    self._display.show(self._group)
+    if hasattr(self._display,"root_group"):
+      self._display.root_group = self._group
+    else:
+      self._display.show(self._group)
     if hasattr(self._display,"time_to_refresh"):
       time.sleep(2*self._display.time_to_refresh)     # Magtag needs this
     self._display.refresh()
@@ -222,6 +225,9 @@ class App:
         if pin_alarm:
           print("deep-sleep until button-press")
           if settings.deep_sleep:
+            if hasattr(settings,"power_off"):
+              print("executing power_off()")
+              settings.power_off()          # this will only work when on battery
             alarm.exit_and_deep_sleep_until_alarms(pin_alarm)
           else:
             alarm.light_sleep_until_alarms(pin_alarm)
@@ -249,6 +255,7 @@ class App:
       wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
     if settings.deep_sleep:
       if hasattr(settings,"power_off"):
+        print("executing power_off()")
         settings.power_off()             # this will only work when on battery
       alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
     else:
