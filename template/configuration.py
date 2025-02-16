@@ -72,6 +72,8 @@ settings.rtc_ext = lambda: PCF8523(i2c)
 #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
 #settings.rtc_ext_wakeup = 0|1                  # active low|high rtc-wakup
 
+#settings.ext_power_on = False                  # external power switch
+
 # example power_off command for Badger2040W (don't forget to import time)
 #def power_off():
 #  time.sleep(3)                # give time for the display to refresh

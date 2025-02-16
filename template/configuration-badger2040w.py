@@ -71,6 +71,8 @@ settings.deep_sleep = True                      # use deep-sleep
 settings.rtc_ext = lambda: pcf85063a.PCF85063A(i2c)
 settings.rtc_ext_wakeup = 1                     # active low|high rtc-wakup
 
+settings.ext_power_on = True                    # external power switch
+
 settings.sensor = lambda: None                 # no temp/humidity sensor
 #settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
 
