@@ -5,6 +5,7 @@ doc.local
 test
 src/lib/adafruit*
 src/lib/pcf85063a.mpy
+src/lib/*.txt
 *secrets.py
 *configuration.py
 boot_out.txt
