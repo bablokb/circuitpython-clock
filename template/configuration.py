@@ -62,6 +62,8 @@ settings.ACTIVE_START_TIME  = None              # start using a button
 
 # --- hardware-setup ---
 
+settings.led_blinktime = 0.1                    # initial blink in s
+
 i2c = board.I2C()
 settings.display = lambda: board.DISPLAY        # use builtin display
 settings.deep_sleep = True                      # use deep-sleep

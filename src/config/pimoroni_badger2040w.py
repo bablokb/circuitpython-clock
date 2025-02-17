@@ -11,12 +11,20 @@
 import board
 import alarm
 from analogio import AnalogIn
+from digitalio import DigitalInOut, Direction
 from configuration import pins
 
 class HWConfig:
   def __init__(self):
     """ constructor """
     pass
+
+  def led(self,value,color=None):
+    """ set status LED (ignore color)"""
+    if not hasattr(self,"_led"):
+      self._led = DigitalInOut(board.USER_LED)
+      self._led.direction = Direction.OUTPUT
+    self._led.value = value
 
   def bat_level(self):
     """ return battery level """

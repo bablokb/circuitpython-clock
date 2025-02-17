@@ -17,6 +17,7 @@ class HWConfig:
   def __init__(self):
     """ constructor """
     self._bat_mon = AnalogIn(board.BATTERY)
+    super().__init__()
 
   def bat_level(self):
     """ return battery level """

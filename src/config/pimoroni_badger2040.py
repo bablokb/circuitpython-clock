@@ -22,6 +22,13 @@ class HWConfig:
     self._ref_pow = DigitalInOut(board.VREF_POWER)
     self._ref_pow.direction = Direction.OUTPUT
 
+  def led(self,value,color=None):
+    """ set status LED (ignore color)"""
+    if not hasattr(self,"_led"):
+      self._led = DigitalInOut(board.USER_LED)
+      self._led.direction = Direction.OUTPUT
+    self._led.value = value
+
   def bat_level(self):
     """ return battery level """
     self._ref_pow.value = 1
