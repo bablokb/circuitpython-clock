@@ -41,9 +41,11 @@ class Clock:
     if hasattr(settings,"rtc_ext_wakeup"):
       if hasattr(self._rtc_ext,"alarm1"):
         self._rtc_ext.alarm1_status = False
+        self._rtc_ext.alarm1_interrupt = False
         print("clearing alarm1")
       elif hasattr(self._rtc_ext,"alarm"):
         self._rtc_ext.alarm_status = False
+        self._rtc_ext.alarm_interrupt = False
         print("clearing alarm")
 
   # --- get status   ---------------------------------------------------------

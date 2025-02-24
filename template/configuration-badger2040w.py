@@ -90,6 +90,7 @@ settings.power_off = power_off
 
 pins.PIN_ALARM = board.SW_A                     # wakeup pin
 pins.RTC_ALARM = board.RTC_ALARM                # rtc wakup pin
+pins.PIN_OFF   = (board.SW_C,1)                 # turn system off (active high)
 
 # --- UI ---
 

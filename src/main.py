@@ -76,8 +76,13 @@ class App:
     time.sleep(getattr(settings,"led_blinktime",0.1))
     self._hw.led(False)
 
-    self._display   = settings.display()
+    self._clock  = Clock(settings.rtc_ext(),rtc.RTC())
 
+    # check for power_off pin
+    self._check_power_off()
+
+    # initialize display and UI-settings
+    self._display   = settings.display()
     width  = self._display.width
     height = self._display.height
     self._map = {
@@ -88,12 +93,44 @@ class App:
       'SE': ((width-GAP, height-GAP), (1,1))
     }
 
-    self._clock  = Clock(settings.rtc_ext(),rtc.RTC())
     self._sensor = settings.sensor()
 
     self._group = displayio.Group()
     self._background()
     self._create_fields()
+
+  # --- check for power-off button press   -----------------------------------
+
+  def _check_power_off(self):
+    """ check power_off button """
+
+    # PIN_OFF is a tuple: (pin,active-state), e.g. (board.xx,1)
+    if pins.PIN_OFF:
+      from digitalio import DigitalInOut, Pull
+      off = DigitalInOut(pins.PIN_OFF[0])
+      off.pull = Pull.DOWN if pins.PIN_OFF[1] else Pull.UP
+      if off.value == pins.PIN_OFF[1]:
+        blink_time = getattr(settings,"led_blinktime",0.1)
+        for _ in range(3):
+          time.sleep(blink_time)
+          self._hw.led(True)
+          time.sleep(blink_time)
+          self._hw.led(False)
+        time.sleep(1)                   # extra time for button release
+        self._power_off()               # when on battery
+        off.deinit()                    # else force deep-sleep
+        self.deep_sleep(force=True)
+      off.deinit()
+
+  # --- execute power-off if available   -------------------------------------
+
+  def _power_off(self):
+    """ power system off """
+
+    if (getattr(settings,"ext_power_on",False) and
+        hasattr(settings,"power_off")):
+      print("executing power_off()")
+      settings.power_off()          # this will only work when on battery
 
   # --- create background   --------------------------------------------------
 
@@ -213,24 +250,21 @@ class App:
 
   # --- send system to deep-sleep   ------------------------------------------
 
-  def deep_sleep(self):
+  def deep_sleep(self,force=False):
     """ send system to deep-sleep """
 
     now = time.localtime()
     self._clock.deep_sleep()
 
     # check for long sleep during inactive period (e.g. at night)
-    if (now.tm_hour == int(settings.ACTIVE_END_TIME[0:2]) and
+    if force or (now.tm_hour == int(settings.ACTIVE_END_TIME[0:2]) and
         now.tm_min  == int(settings.ACTIVE_END_TIME[3:5])):
       print("end of active time, taking a long nap")
       if settings.ACTIVE_START_TIME:
         wait_time = self._get_wait_time()
       else:
-        if (getattr(settings,"ext_power_on",False) and
-            hasattr(settings,"power_off")):
-          print("executing power_off()")
-          settings.power_off()          # this will only work when on battery
-        pin_alarm = self._hw.pin_alarm()
+        self._power_off()                   # when on battery
+        pin_alarm = self._hw.pin_alarm()    # else normal pin-alarm
         if pin_alarm:
           print("deep-sleep until button-press")
           if settings.deep_sleep:
@@ -260,10 +294,8 @@ class App:
       print("using TimeAlarm from internal RTC")
       wake_alarm = alarm.time.TimeAlarm(epoch_time=alarm_time)
     if settings.deep_sleep:
-      if hasattr(settings,"power_off"):
-        print("executing power_off()")
-        settings.power_off()             # this will only work when on battery
-      alarm.exit_and_deep_sleep_until_alarms(wake_alarm)
+      self._power_off()                                   # when on battery
+      alarm.exit_and_deep_sleep_until_alarms(wake_alarm)  # else deep-sleep
     else:
       alarm.light_sleep_until_alarms(wake_alarm)
 

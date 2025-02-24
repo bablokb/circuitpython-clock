@@ -105,9 +105,12 @@ settings.wifi_module = "wifi_impl_esp01"        # implementing module
 #pins.PIN_MISO      = board.MISO                 # for ESP32spi
 
 pins.PIN_ALARM = None                           # no wakeup pin
+pins.RTC_ALARM = None                           # external wakup pin
+pins.PIN_OFF   = None                           # turn system off: (pin,active)
+
 #pins.PIN_ALARM = board.SW_A                    # wakeup pin Badger2040
 #pins.PIN_ALARM = board.D15                     # wakeup pin Magtag
-pins.RTC_ALARM = None                           # external wakup pin
+#pins.PIN_OFF   = (board.SW_C,1)                # turn system off (active high)
 
 # --- UI ---
 
