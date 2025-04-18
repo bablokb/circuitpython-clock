@@ -229,14 +229,10 @@ class Clock:
         self._get_status(RTC_STATE)) or        # external RTC not valid
       (not self._rtc_ext and not               # no external RTC, so
        self._check_rtc(self._rtc_int)) or      #   check internal rtc
-       not self._get_status(TIMEAPI_STATE)     # last API-call not valid
-    )
-    do_update_daily = (
-      self._rtc_int.datetime.tm_hour == settings.TIMEAPI_UPD_HOUR and
-      self._rtc_int.datetime.tm_min == settings.TIMEAPI_UPD_MIN
+      not self._get_status(TIMEAPI_STATE)      # last API-call not valid
     )
 
-    if settings.wifi_module and (do_update or do_update_daily):
+    if settings.wifi_module and do_update:
       try:
         self._connect()
         # update internal+external RTC from internet-time
@@ -248,9 +244,17 @@ class Clock:
         # no internet-connection or time-api fails
         print("exception fetching time: %r" % ex)
         self._set_rtc_state(None)
-        if self._get_status(TIMEAPI_STATE) and do_update:
-          # a failing daily update alone should not trigger new updates
+        if self._get_status(TIMEAPI_STATE):
           self._set_status(TIMEAPI_STATE,0)
     else:
       self._set_rtc_state(None)
+
+    # check for daily updates *after* time-update and force
+    # update on next cycle
+    if (
+      self._rtc_int.datetime.tm_hour == settings.TIMEAPI_UPD_HOUR and
+      self._rtc_int.datetime.tm_min == settings.TIMEAPI_UPD_MIN
+      ):
+      self._set_status(TIMEAPI_STATE,0)
+
     return time.localtime()
