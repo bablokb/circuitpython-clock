@@ -81,6 +81,9 @@ class App:
     # check for power_off pin
     self._check_power_off()
 
+    # check for forced-update pin
+    self._check_forced_time_update()
+
     # initialize display and UI-settings
     self._display   = settings.display()
     width  = self._display.width
@@ -121,6 +124,21 @@ class App:
         off.deinit()                    # else force deep-sleep
         self.deep_sleep(force=True)
       off.deinit()
+
+  # --- check for forced-update button press   -------------------------------
+
+  def _check_forced_time_update(self):
+    """ check force-update button """
+
+    # PIN_UPD is a tuple: (pin,active-state), e.g. (board.xx,1)
+    if pins.PIN_UPD:
+      from digitalio import DigitalInOut, Pull
+      upd = DigitalInOut(pins.PIN_UPD[0])
+      upd.pull = Pull.DOWN if pins.PIN_UPD[1] else Pull.UP
+      self._force_update = upd.value == pins.PIN_UPD[1]
+      upd.deinit()
+    else:
+      self._force_update = False
 
   # --- execute power-off if available   -------------------------------------
 
@@ -204,7 +222,7 @@ class App:
   def update_datetime(self):
     """ read RTC and update values """
 
-    now = self._clock.localtime()
+    now = self._clock.localtime(force_upd=self._force_update)
     txt_time = "{0:02d}:{1:02d}".format(now.tm_hour,now.tm_min)
     day      = WDAY[now.tm_wday]
     date     = DATE_FMT.format(now.tm_mday,now.tm_mon,

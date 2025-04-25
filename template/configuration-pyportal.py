@@ -87,6 +87,8 @@ pins.PIN_SCK       = board.SCK
 pins.PIN_MOSI      = board.MOSI
 pins.PIN_MISO      = board.MISO
 pins.PIN_ALARM = None                           # no wakeup pin
+pins.PIN_OFF   = None                           # turn system off: (pin,active)
+pins.PIN_UPD   = None                           # force time update: (pin,active)
 
 # --- UI ---
 

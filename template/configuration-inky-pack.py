@@ -110,6 +110,9 @@ settings.wifi_module = "wifi_impl_builtin"     # implementing module
 # --- pins ---
 
 pins.PIN_ALARM = board.GP12                     # wakeup pin (SW_A)
+pins.RTC_ALARM = None                           # external wakup pin
+pins.PIN_OFF   = None                           # turn system off: (pin,active)
+pins.PIN_UPD   = None                           # force time update: (pin,active)
 
 # --- UI ---
 
