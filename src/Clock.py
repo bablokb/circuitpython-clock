@@ -32,7 +32,7 @@ class Clock:
     self._rtc_ext = rtc_ext
     self._rtc_int = rtc_int           # internal RTC
     self._wifi    = None
-    self._status  = self._get_status()
+    self._status  = self.get_status()
     if self._status > 0b11:
       self._status = 0
     print(f"status: 0b{self._status:02b}")
@@ -50,7 +50,7 @@ class Clock:
 
   # --- get status   ---------------------------------------------------------
 
-  def _get_status(self,flag=None):
+  def get_status(self,flag=None):
     """ initialize status or return provided status-flag """
     if not flag is None:
       return self._status & flag
@@ -155,13 +155,13 @@ class Clock:
         self._rtc_ext.datetime = ts
         self._set_status(RTC_STATE,1)
     else:
-      state = self._get_status(RTC_STATE) and self._check_rtc(self._rtc_ext)
+      state = self.get_status(RTC_STATE) and self._check_rtc(self._rtc_ext)
       if state:
         # external RTC claims to be valid and passes the heuristic check
         print("using external RTC")
         ext_ts = self._rtc_ext.datetime
         self._rtc_int.datetime = ext_ts
-      elif self._get_status(RTC_STATE):
+      elif self.get_status(RTC_STATE):
         # invalid value of external RTC
         print("using internal RTC, clearing ext RTC-state")
         self._set_status(RTC_STATE,0)
@@ -220,16 +220,16 @@ class Clock:
              self._rtc_ext.datetime.tm_year))
     else:
       print("rtc_ext: not available")
-    print(f"RTC-state:  0b{self._get_status(RTC_STATE):02b}")
-    print(f"API-state:  0b{self._get_status(TIMEAPI_STATE):02b}")
+    print(f"RTC-state:  0b{self.get_status(RTC_STATE):02b}")
+    print(f"API-state:  0b{self.get_status(TIMEAPI_STATE):02b}")
 
     do_update = (
       force_upd or                             # explicit request
       (self._rtc_ext and not
-        self._get_status(RTC_STATE)) or        # external RTC not valid
+        self.get_status(RTC_STATE)) or        # external RTC not valid
       (not self._rtc_ext and not               # no external RTC, so
        self._check_rtc(self._rtc_int)) or      #   check internal rtc
-      not self._get_status(TIMEAPI_STATE)      # last API-call not valid
+      not self.get_status(TIMEAPI_STATE)      # last API-call not valid
     )
 
     if settings.wifi_module and do_update:
@@ -244,7 +244,7 @@ class Clock:
         # no internet-connection or time-api fails
         print("exception fetching time: %r" % ex)
         self._set_rtc_state(None)
-        if self._get_status(TIMEAPI_STATE):
+        if self.get_status(TIMEAPI_STATE):
           self._set_status(TIMEAPI_STATE,0)
     else:
       self._set_rtc_state(None)
@@ -255,6 +255,7 @@ class Clock:
       self._rtc_int.datetime.tm_hour == settings.TIMEAPI_UPD_HOUR and
       self._rtc_int.datetime.tm_min == settings.TIMEAPI_UPD_MIN
       ):
+      print("clearing TIMEAPI_STATE")
       self._set_status(TIMEAPI_STATE,0)
 
     return time.localtime()
