@@ -90,6 +90,8 @@ settings.wifi_module = "wifi_impl_esp01"        # implementing module
 #settings.wifi_module = "wifi_impl_esp32spi"    # implementing module
 #settings.wifi_module = "wifi_impl_builtin"     # implementing module
 
+#settings.debug = False                         # add debug output to screen
+
 # --- pins ---
 
 #pins.PIN_TX    = board.TX                       # for ESP-01S

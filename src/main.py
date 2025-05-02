@@ -91,6 +91,7 @@ class App:
     self._map = {
       'NW': ((GAP,       GAP),        (0,0)),
       'NE': ((width-GAP, GAP),        (1,0)),
+      'E':  ((width-GAP, height/2),   (1,0.5)),
       'SW': ((GAP,       height-GAP), (0,1)),
       'S':  ((width/2,   height-GAP), (0.5,1)),
       'SE': ((width-GAP, height-GAP), (1,1))
@@ -199,6 +200,10 @@ class App:
     else:
       self._bat = None
 
+    # label for status
+    if getattr(settings,"debug",False):
+      self._state = self._create_text('E',"11")
+
   # --- query wait-time for inactive period   --------------------------------
 
   def _get_wait_time(self):
@@ -254,6 +259,8 @@ class App:
   def update(self):
     """ update time, sensor-values and refresh display """
     self.update_datetime()
+    if getattr(settings,"debug",False):
+      self._state.text = f"{self._clock.get_status(0b11):02b}"
     if self._sensor:
       self.update_env_sensor()
     if self._bat:
