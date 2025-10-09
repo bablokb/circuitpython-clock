@@ -103,7 +103,6 @@ settings.rtc_ext = lambda: PCF8523(i2c)
 settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
 
 #settings.wifi_module = None                    # no WIFI
-#settings.wifi_module = "wifi_impl_esp01"        # implementing module
 #settings.wifi_module = "wifi_impl_esp32spi"    # implementing module
 settings.wifi_module = "wifi_impl_builtin"     # implementing module
 

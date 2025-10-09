@@ -64,11 +64,11 @@ Installation
        - adafruit_display_shapes
        - adafruit_display_text
        - (adafruit_ds3231)
-       - adafruit_espatcontrol
        - (adafruit_pcf8523)
        - adafruit_register
        - adafruit_requests
        - (circuitpython_pcf85063a)
+       - (circuitpython_esp32at)
 
      The preferred way to do this is to use `circup` (note that the device
      must be mounted):  
@@ -78,6 +78,10 @@ Installation
          circup --path /mountpoint/of/device install -r requirements.txt
 
      You can save some space if you delete the unneeded rtc-drivers.
+
+     The last library (circuitpython_esp32at) has to be installed manually
+     from <https://github.com/bablokb/circuitpython-esp32at> and is only
+     necessary for ESP-01S based systems.
 
   2. Clone the repository
 
@@ -137,8 +141,7 @@ There a few things you should change:
         settings.rtc_ext = lambda: PCF8523(i2c)
         #settings.rtc_ext = lambda: adafruit_ds3231.DS3231(i2c)
         settings.sensor = lambda: adafruit_ahtx0.AHTx0(i2c)
-        settings.wifi_module = "wifi_impl_esp01"        # implementing module
-        #settings.wifi_module = "wifi_impl_builtin"     # implementing module
+        settings.wifi_module = "wifi_impl_builtin"     # implementing module
 
 
 Other settings (like `ui.*`) are optional and let you tweak the appearance
