@@ -19,10 +19,11 @@ class WifiImpl:
 
   # --- constructor   --------------------------------------------------------
 
-  def __init__(self,config,secrets):
+  def __init__(self, settings, pins, secrets):
     """ constructor """
 
-    self._config  = config
+    self._settings  = settings
+    self._pins  = pins
     self._secrets = secrets
     if not hasattr(self._secrets,'channel'):
       self._secrets.channel = 0
@@ -34,12 +35,12 @@ class WifiImpl:
   def connect(self):
     """ initialize connection """
 
-    esp32_ready = DigitalInOut(self._config.PIN_ESP_BUSY)
-    esp32_gpio0 = DigitalInOut(self._config.PIN_ESP_GPIO0)
-    esp32_reset = DigitalInOut(self._config.PIN_ESP_RESET)
-    esp32_cs    = DigitalInOut(self._config.PIN_ESP_CS)
-    spi         = busio.SPI(self._config.PIN_SCK,
-                            self._config.PIN_MOSI, self._config.PIN_MISO)
+    esp32_ready = DigitalInOut(self._pins.PIN_ESP_BUSY)
+    esp32_gpio0 = DigitalInOut(self._pins.PIN_ESP_GPIO0)
+    esp32_reset = DigitalInOut(self._pins.PIN_ESP_RESET)
+    esp32_cs    = DigitalInOut(self._pins.PIN_ESP_CS)
+    spi         = busio.SPI(self._pins.PIN_SCK,
+                            self._pins.PIN_MOSI, self._pins.PIN_MISO)
     esp         = adafruit_esp32spi.ESP_SPIcontrol(
                   spi, esp32_cs, esp32_ready,esp32_reset, esp32_gpio0)
 

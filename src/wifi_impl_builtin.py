@@ -18,10 +18,11 @@ class WifiImpl:
 
   # --- constructor   --------------------------------------------------------
 
-  def __init__(self,config,secrets):
+  def __init__(self, settings, pins, secrets):
     """ constructor """
 
-    self._config  = config
+    self._settings = settings
+    self._pins  = pins
     self._secrets = secrets
     if not hasattr(self._secrets,'channel'):
       self._secrets.channel = 0
@@ -34,6 +35,22 @@ class WifiImpl:
     """ connect to AP """
 
     import wifi
+
+    # check for esp32at support and initialize co-processor
+    if hasattr(wifi,"at_version"):
+      import busio
+      uart = busio.UART(self._pins.PIN_TX, self._pins.PIN_RX,
+                        baudrate=115200, receiver_buffer_size=2048)
+      kwargs = {}
+      dns = getattr(self._settings,"wifi_dns")
+      if dns:
+        kwargs['ipv4_dns_defaults'] = dns
+      country = getattr(self._settings,"wifi_country")
+      if country:
+        kwargs['country_settings'] = country
+      wifi.init(uart,debug=self._secrets.debugflag,
+                reset_pin=self._pins.PIN_RST,**kwargs)
+
     print("connecting to %s" % self._secrets.ssid)
     retries = self._secrets.retry
 

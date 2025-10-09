@@ -14,10 +14,10 @@
 
 import builtins
 import board
-from   configuration import secrets, settings, pins
+from   configuration import settings, pins, secrets
 
 # import wifi-implementation
 if settings.wifi_module:
   WifiImpl = builtins.__import__(settings.wifi_module,None,None,["WifiImpl"],0)
   def Wifi():
-    return WifiImpl.WifiImpl(pins,secrets)
+    return WifiImpl.WifiImpl(settings, pins, secrets)
