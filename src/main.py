@@ -109,7 +109,7 @@ class App:
     """ check power_off button """
 
     # PIN_OFF is a tuple: (pin,active-state), e.g. (board.xx,1)
-    if pins.PIN_OFF:
+    if hasattr(pins, "PIN_OFF"):
       from digitalio import DigitalInOut, Pull
       off = DigitalInOut(pins.PIN_OFF[0])
       off.pull = Pull.DOWN if pins.PIN_OFF[1] else Pull.UP
@@ -132,7 +132,7 @@ class App:
     """ check force-update button """
 
     # PIN_UPD is a tuple: (pin,active-state), e.g. (board.xx,1)
-    if pins.PIN_UPD:
+    if hasattr(pins, "PIN_UPD"):
       from digitalio import DigitalInOut, Pull
       upd = DigitalInOut(pins.PIN_UPD[0])
       upd.pull = Pull.DOWN if pins.PIN_UPD[1] else Pull.UP
