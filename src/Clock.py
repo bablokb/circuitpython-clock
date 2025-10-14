@@ -101,7 +101,7 @@ class Clock:
   def _connect(self):
     """ initialize wifi and connect to AP """
 
-    from Wifi import Wifi
+    from _wifi import Wifi
     self._wifi = Wifi()
     self._wifi.connect()
 
